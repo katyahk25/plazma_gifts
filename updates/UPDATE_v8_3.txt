@@ -1,0 +1,5 @@
+v8.3
+- Parker Jotter split section redesigned again.
+- Removed frame effect.
+- Replaced jagged triangles with a continuous zigzag seam.
+- Improved heading fit and styled the benefit list with markers.

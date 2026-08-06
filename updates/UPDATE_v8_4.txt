@@ -1,0 +1,5 @@
+v8.4
+- Shifted hero image to the right and increased spacing from text.
+- Rebuilt the Parker Jotter section without a frame effect.
+- Added a double zigzag seam: burgundy / white / burgundy into the burgundy side.
+- Styled the benefits list with branded circular markers.

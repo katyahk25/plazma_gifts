@@ -1,0 +1,49 @@
+/* Page-specific refresh for the Parker landing hero */
+.page-pens .product-hero-aida{position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 76% 34%,rgba(63,84,160,.32),transparent 30%),linear-gradient(135deg,#02163b 0%,#032a68 57%,#0a2752 100%)}
+.page-pens .product-hero-aida::before,.page-pens .product-hero-aida::after{content:"";position:absolute;border:1.5px solid rgba(255,255,255,.08);border-radius:50%}
+.page-pens .product-hero-aida::before{width:620px;height:620px;right:-210px;top:-120px}
+.page-pens .product-hero-aida::after{width:420px;height:420px;right:-60px;bottom:-250px;border-color:rgba(187,17,67,.26)}
+.page-pens .product-hero-aida .product-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(500px,.96fr);gap:64px;align-items:center;min-height:720px;padding:74px 0 88px}
+.page-pens .product-hero-aida .product-hero-copy{max-width:560px}
+.page-pens .product-hero-aida h1{margin:0 0 24px;max-width:none;font-size:clamp(54px,5.4vw,82px);line-height:.95;letter-spacing:-.045em;text-transform:none}
+.page-pens .product-hero-aida .lead{max-width:520px;margin:0 0 28px;font-size:clamp(18px,2vw,24px);line-height:1.42;color:rgba(255,255,255,.84)}
+.page-pens .hero-offer{max-width:540px;margin:0 0 34px;font-size:clamp(22px,2.4vw,38px);line-height:1.28;color:#fff}
+.page-pens .hero-offer strong{font-size:1.05em;white-space:nowrap}
+.page-pens .single-action .btn-primary{min-width:320px;justify-content:center}
+.page-pens .product-facts-short{margin-top:38px;gap:18px}
+.page-pens .product-facts-short span{min-width:230px;padding:20px 22px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+.page-pens .product-facts-short b{font-size:17px}
+.page-pens .product-facts-short small{font-size:12px;color:rgba(255,255,255,.6)}
+.page-pens .product-hero-media{align-self:stretch;display:flex;align-items:center;justify-content:flex-end}
+.page-pens .product-hero-image-aida{width:min(700px,100%);aspect-ratio:4/3;border-radius:0;background:none}
+.page-pens .product-hero-image-aida img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 26px 46px rgba(0,0,0,.42))}
+
+.page-pens .section-summary-cards{padding-top:46px;padding-bottom:34px;background:#f5f6fa}
+.page-pens .summary-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.page-pens .summary-card{padding:32px 30px;border:1px solid #dfe4f1;border-radius:24px;background:#fff;box-shadow:0 12px 32px rgba(8,23,59,.04)}
+.page-pens .summary-icon{width:60px;height:60px;margin-bottom:22px;border-radius:50%;background:#f0f2f8;position:relative}
+.page-pens .summary-card h3{margin:0 0 12px;color:#081739;font-size:22px;line-height:1.12;text-transform:none}
+.page-pens .summary-card p{margin:0 0 20px;color:#697896;font-size:17px;line-height:1.55}
+.page-pens .summary-card a{display:inline-flex;align-items:center;gap:8px;color:#b31247;font-size:16px;font-weight:700}
+.page-pens .summary-icon::before,.page-pens .summary-icon::after{content:"";position:absolute}
+.page-pens .icon-process::before{left:18px;top:14px;width:24px;height:30px;border:2px solid #223b68;border-radius:4px;background:transparent}
+.page-pens .icon-process::after{left:24px;top:22px;width:12px;height:2px;background:#223b68;box-shadow:0 6px 0 #223b68,0 12px 0 #223b68}
+.page-pens .icon-included::before{left:17px;top:17px;width:26px;height:26px;border:2px solid #223b68;border-radius:50%}
+.page-pens .icon-included::after{left:28px;top:14px;width:3px;height:32px;background:#223b68;transform:rotate(45deg);border-radius:99px;box-shadow:0 0 0 0 #223b68}
+.page-pens .icon-delivery::before{left:15px;top:23px;width:22px;height:14px;border:2px solid #223b68;border-right:none;border-radius:4px 0 0 4px}
+.page-pens .icon-delivery::after{left:33px;top:27px;width:14px;height:10px;border:2px solid #223b68;border-left:none;border-radius:0 3px 3px 0;box-shadow:-18px 16px 0 -12px #223b68,6px 16px 0 -12px #223b68}
+
+@media (max-width: 1180px){
+  .page-pens .product-hero-aida .product-hero-grid{grid-template-columns:minmax(0,1fr) minmax(420px,.84fr);gap:42px}
+  .page-pens .summary-card-grid{grid-template-columns:1fr;gap:18px}
+}
+@media (max-width: 820px){
+  .page-pens .product-hero-aida .product-hero-grid{grid-template-columns:1fr;min-height:auto;padding:58px 0 54px;gap:24px}
+  .page-pens .product-hero-aida .product-hero-copy{max-width:none}
+  .page-pens .product-hero-aida h1{font-size:clamp(40px,10vw,58px)}
+  .page-pens .hero-offer{font-size:clamp(20px,5.5vw,30px)}
+  .page-pens .product-hero-media{justify-content:center}
+  .page-pens .product-hero-image-aida{width:min(620px,100%)}
+  .page-pens .single-action .btn-primary{min-width:0;width:100%}
+  .page-pens .product-facts-short{display:grid;grid-template-columns:1fr}
+}

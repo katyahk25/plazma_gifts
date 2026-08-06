@@ -1,0 +1,5 @@
+v8.5
+- Rebuilt the Parker split block as an open page-width layout.
+- Fixed the right burgundy area structure and full-height double zigzag seam.
+- Styled the benefit list with circular branded markers.
+- Increased spacing between hero text and image.

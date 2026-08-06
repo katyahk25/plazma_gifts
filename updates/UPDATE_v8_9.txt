@@ -1,0 +1,4 @@
+v8.9
+- Re-issued the approved Parker first screen exactly as in the accepted mockup.
+- Added cache-busted asset names for the page-specific CSS and hero image.
+- Updated header/navigation and summary cards to match the approved layout.

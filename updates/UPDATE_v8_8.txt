@@ -1,0 +1,5 @@
+v8.8
+- New Parker first screen based on approved mockup.
+- AIDA-style hero copy with one CTA.
+- Updated hero photo using the approved composition and engraving “Иванов И.И.”.
+- Added three summary cards under the hero.

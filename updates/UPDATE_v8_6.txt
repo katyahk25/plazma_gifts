@@ -1,0 +1,6 @@
+v8.6
+- Implemented the approved Parker Jotter split block mockup.
+- Removed frame/card treatment from the block.
+- Added full-height double zigzag seam (burgundy / white / burgundy).
+- Styled the benefits list with branded circular markers.
+- Moved the hero image farther right to prevent overlap with text.

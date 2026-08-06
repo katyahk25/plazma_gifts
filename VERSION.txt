@@ -1,0 +1,4 @@
+PLAZMA_SITE permanent project
+Version: v9.2
+Date: 2026-08-05
+Changes: Clean implementation of only the approved Parker first screen and summary cards, with the original engraving constructor and all other page sections preserved.

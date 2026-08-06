@@ -1,0 +1,6 @@
+v8.7
+- Added isolated pens.css loaded after the legacy stylesheet.
+- Rebuilt the approved Parker Jotter block as a true full-width section.
+- Added an SVG double zigzag seam running the full block height.
+- Kept all left and right text in separate non-overlapping columns.
+- Corrected the hero grid so the image no longer overlaps the heading.

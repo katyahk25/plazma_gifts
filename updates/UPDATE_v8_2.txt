@@ -1,0 +1,4 @@
+v8.2
+- Parker Jotter section redesigned as a two-color split block with zigzag divider.
+- Heading changed to "Почему Parker Jotter?" on one line on desktop.
+- Benefit list updated per client notes.

@@ -1,0 +1,1 @@
+Copyright 2014-2020 Aleksandr Andreev and Nikita Simmons (https://sci.ponomar.net/).

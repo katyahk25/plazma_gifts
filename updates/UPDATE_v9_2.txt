@@ -1,0 +1,5 @@
+v9.2
+- Built from the stable base rather than layering on previous updates.
+- Recreated the accepted first-screen mockup with dedicated isolated classes.
+- Added a page-specific header matching the accepted mockup.
+- Preserved the engraving constructor and every unchanged section from the stable page.
