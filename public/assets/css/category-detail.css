@@ -68,6 +68,22 @@ body:not(.page-home):not(.page-pens) .page-hero .kicker{display:none}
 .category-detail-request-card p:not(.category-detail-overline){max-width:760px;margin:0;color:var(--muted);font-size:17px;line-height:1.55}
 .category-detail-request-card .btn{min-width:210px}
 
+/* Parker page refinements in the same inner-page pass. */
+.page-pens .parker-v10-icon{background-repeat:no-repeat;background-position:center;background-size:32px 32px}
+.page-pens .parker-v10-icon::before,.page-pens .parker-v10-icon::after{display:none}
+.page-pens .parker-v10-icon-clock{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABnElEQVR4nO2bXW7EIAyETdUr7P0P2EOkD1UkhJbgn7HNFn/PWTwMxiHAEhVFURRFcSotOuB1XT+rZ1prrwgtRAEGcDq8wtMQNwMQHR/xMAJugEfHR5BGQA1Aze/IOgExYCXYItazbSKAAU8CkanqFcdkwEyUZ9VGx/zaRQiXWfva4qvKgHfBIhcvSB3fCCHazo8dkLbTWntZX7viKRDxnrcg1ScyYJfUX8WXmKAugrPgGVh0sA3YPfVHuHrVGbDL6N+4rgM+bfRvOLpVGbDb6N9odJmK4H+gDFg9YF2tRTPqW9WByoBsAdmUAdkCsikDMoO/q9jRq85UA2adjTRhqwzoiTKBtScYsRhCbXtLtW5TBLOyYRsDiP5MeNr29jBCZYD3/NRmg0YXy4CMD6BZTIkWzrPwkyEkT1MCpYdtQOZn8B0bPfpExiIYuWDxekuIDLAeQnhgPawRZ8Cn7QitgKwDsrIAcgMNHTwiQ5Cx4SdD3tmANr7uCGl/2HP0LbGeY+8J9hx9U7Tn2LvCI8feFp+x2/8FiqIoiuJgfgHgtgCqal3JHgAAAABJRU5ErkJggg==")}
+.page-pens .parker-v10-icon-truck{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABG0lEQVR4nO2YURKDIAxE106v0Psf0EPQ344DlAAaie/9om7YbqJFAgAAAAAAAACAZ7HVFlNK+1WFSNK2bZ8r9STpVVq4evNemlkDPArx0i4m4Cm8Wy46uzc9E0cCvAvIYU3ESEJDJGCkhUIYIPWbEMYAqc+EW84AS08fN51S2i33L5+A3GYtSVjeAGnMhBAGSP0mhDFA6jMhlAGS3YRwBkg2E0IaILW/SsMa0AoGeBfgTdOnsOeBRY1cXda/xssmoPSjmM8SrAIrk0tHMQEeZ/QumtYbjsn4Lbq21vv8GdTqWHYGzOJ2ByL/UjM7gcMGeA/LUX1zC7T29VkDbbZ+1wz49/Czp/lM/e4hWBK56lXmrQ8AAAAAAAAr8wWbdXiqT/n9sQAAAABJRU5ErkJggg==")}
+.page-pens #price-includes{background:#f5f6fa}
+.page-pens #price-includes .plain-section-head{max-width:900px;margin-bottom:40px}
+.page-pens #price-includes .plain-section-head h2{text-transform:none}
+.page-pens #price-includes .included-grid{gap:18px;margin-top:0}
+.page-pens #price-includes .included-grid article{position:relative;min-height:250px;padding:30px 28px;border:1px solid #dbe1ee;border-radius:20px;background:#fff;box-shadow:0 14px 36px rgba(2,28,68,.06)}
+.page-pens #price-includes .included-grid article::before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;border-radius:20px 20px 0 0;background:var(--burgundy)}
+.page-pens #price-includes .included-grid article>span{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;margin:0 0 34px;border-radius:50%;background:#f1e9ed;color:var(--burgundy);font-size:12px;font-weight:900;letter-spacing:.06em}
+.page-pens #price-includes .included-grid h3{margin:0 0 12px;color:var(--navy);font-size:24px}
+.page-pens #price-includes .included-grid p{color:var(--muted);font-size:15px;line-height:1.55}
+.page-pens #price-includes .inline-note{margin-top:22px;padding:16px 20px;border-left:0;border:1px solid #dbe1ee;border-radius:14px;background:#fff;color:#5f6f8b;text-align:center}
+
 @media(max-width:1050px){
   .category-detail-hero-grid{grid-template-columns:minmax(0,1fr) minmax(340px,.72fr);gap:44px}
   .category-detail-visual{min-height:430px}
@@ -87,6 +103,7 @@ body:not(.page-home):not(.page-pens) .page-hero .kicker{display:none}
   .category-detail-example{min-height:420px}
   .category-detail-request-card{grid-template-columns:1fr;gap:28px;padding:38px 34px}
   .category-detail-request-card .btn{justify-self:start}
+  .page-pens #price-includes .included-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:560px){
   .category-detail-copy h1{font-size:clamp(38px,12vw,52px)}
@@ -101,4 +118,6 @@ body:not(.page-home):not(.page-pens) .page-hero .kicker{display:none}
   .category-detail-offer-grid p{min-height:auto}
   .category-detail-example{min-height:330px}
   .category-detail-request-card{padding:30px 24px;border-radius:22px}
+  .page-pens #price-includes .included-grid{grid-template-columns:1fr}
+  .page-pens #price-includes .included-grid article{min-height:auto}
 }
