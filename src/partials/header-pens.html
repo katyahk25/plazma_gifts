@@ -9,10 +9,37 @@
     </button>
 
     <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
-      <a href="gifts.html" data-nav="services">Услуги</a>
-      <a href="index.html#popular" data-nav="popular">Популярное</a>
-      <a href="portfolio.html" data-nav="portfolio">Работы</a>
-      <a href="index.html#process" data-nav="process">Как заказать</a>
+      <div class="nav-item nav-item-dropdown">
+        <a href="about.html" data-nav="about">О нас <span class="nav-caret" aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown" aria-label="Разделы о нас">
+          <a href="about.html#who-we-are">Кто мы</a>
+          <a href="about.html#experience">Наш опыт</a>
+        </div>
+      </div>
+
+      <div class="nav-item nav-item-dropdown nav-item-gifts">
+        <a href="gifts.html" data-nav="gifts">Подарки <span class="nav-caret" aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown" aria-label="Категории подарков">
+          <a href="pens.html">Ручки с гравировкой</a>
+          <a href="notebooks.html">Ежедневники</a>
+          <a href="mugs.html">Кружки</a>
+          <a href="textile.html">Текстиль</a>
+          <a href="canvases.html">Холсты</a>
+          <a href="exlibris.html">Экслибрисы</a>
+          <a href="gift-sets.html">Подарочные наборы</a>
+        </div>
+      </div>
+
+      <div class="nav-item nav-item-dropdown nav-item-business">
+        <a href="business.html" data-nav="business">Для бизнеса <span class="nav-caret" aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown" aria-label="Категории для бизнеса">
+          <a href="seals-stamps.html">Печати и штампы</a>
+          <a href="logo-stamps.html">Штампы с логотипом</a>
+          <a href="print-materials.html">Баннеры, визитки, листовки</a>
+        </div>
+      </div>
+
+      <a href="delivery.html" data-nav="delivery">Доставка и оплата</a>
       <a href="contacts.html" data-nav="contacts">Контакты</a>
     </nav>
 
