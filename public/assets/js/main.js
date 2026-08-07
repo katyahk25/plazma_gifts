@@ -1,6 +1,45 @@
 (() => {
   const menuButton = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.site-nav');
+  const dropdowns = [...document.querySelectorAll('.nav-item-dropdown')];
+
+  const isDesktopNav = () => window.innerWidth > 820;
+
+  const closeDropdowns = except => {
+    dropdowns.forEach(item => {
+      if (item === except) return;
+      item.classList.remove('is-open');
+      const trigger = item.querySelector(':scope > a');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    });
+  };
+
+  dropdowns.forEach(item => {
+    const trigger = item.querySelector(':scope > a');
+    if (!trigger) return;
+
+    trigger.setAttribute('aria-haspopup', 'true');
+    trigger.setAttribute('aria-expanded', 'false');
+
+    trigger.addEventListener('click', event => {
+      if (!isDesktopNav()) return;
+
+      event.preventDefault();
+      const willOpen = !item.classList.contains('is-open');
+      closeDropdowns(item);
+      item.classList.toggle('is-open', willOpen);
+      trigger.setAttribute('aria-expanded', String(willOpen));
+    });
+  });
+
+  document.addEventListener('click', event => {
+    if (!isDesktopNav()) return;
+    if (!event.target.closest('.nav-item-dropdown')) closeDropdowns();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeDropdowns();
+  });
 
   if (menuButton && nav) {
     const closeMenu = () => {
@@ -16,9 +55,13 @@
       document.body.classList.toggle('menu-open', open);
     });
 
-    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      if (!isDesktopNav()) closeMenu();
+    }));
+
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 820) closeMenu();
+      if (isDesktopNav()) closeMenu();
+      closeDropdowns();
     });
   }
 
