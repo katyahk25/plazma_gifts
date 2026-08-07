@@ -1,31 +1,82 @@
-<main>
-  <section class="page-hero">
-    <div class="container page-hero-grid">
-      <div>
-        <nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><a href="{{PARENT_URL}}">{{PARENT_LABEL}}</a><span>—</span><span>{{HEADING}}</span></nav>
-        <span class="kicker">{{KICKER}}</span>
-        <h1>{{HEADING}}</h1>
-        <p class="lead">{{LEAD}}</p>
-        <div class="hero-actions"><a class="btn btn-primary" href="index.html#request">Получить расчёт</a><a class="btn btn-outline" href="{{PARENT_URL}}">Все направления</a></div>
-      </div>
-      <aside class="page-hero-note"><strong>{{NOTE_TITLE}}</strong><p>{{NOTE_TEXT}}</p></aside>
-    </div>
-  </section>
-
-  <section class="section section-light">
+<main class="category-detail">
+  <section class="category-detail-hero">
     <div class="container">
-      <div class="section-head"><div><span class="kicker">Основная информация</span><h2>Что будет на странице</h2></div><p class="muted">Это базовый каркас раздела. Фотографии, подробные варианты, цены и дополнительные условия добавим отдельным этапом.</p></div>
-      <div class="service-grid">
-        <article class="service-card"><span>01</span><h3>{{ITEM_1_TITLE}}</h3><p>{{ITEM_1_TEXT}}</p><small>{{ITEM_1_NOTE}}</small></article>
-        <article class="service-card"><span>02</span><h3>{{ITEM_2_TITLE}}</h3><p>{{ITEM_2_TEXT}}</p><small>{{ITEM_2_NOTE}}</small></article>
-        <article class="service-card"><span>03</span><h3>{{ITEM_3_TITLE}}</h3><p>{{ITEM_3_TEXT}}</p><small>{{ITEM_3_NOTE}}</small></article>
+      <nav class="breadcrumbs category-detail-breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><a href="{{PARENT_URL}}">{{PARENT_LABEL}}</a><span>—</span><span>{{HEADING}}</span></nav>
+
+      <div class="category-detail-hero-grid">
+        <div class="category-detail-copy">
+          <h1>{{HEADING}}</h1>
+          <p class="category-detail-lead">{{LEAD}}</p>
+          <div class="category-detail-actions">
+            <a class="btn btn-primary" href="#category-request">Получить расчёт</a>
+            <a class="btn btn-outline" href="{{PARENT_URL}}">Все направления</a>
+          </div>
+
+          <div class="category-detail-facts" aria-label="Срок и доставка">
+            <div class="category-detail-fact">
+              <span class="category-detail-fact-icon category-detail-fact-icon-clock" aria-hidden="true"></span>
+              <div><strong>Срок изготовления</strong><span>Уточним после выбора варианта и тиража</span></div>
+            </div>
+            <div class="category-detail-fact">
+              <span class="category-detail-fact-icon category-detail-fact-icon-truck" aria-hidden="true"></span>
+              <div><strong>Доставка по России</strong><span>Отправляем готовые заказы в другие города</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-detail-visual" role="img" aria-label="{{HEADING}}"></div>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container page-cta">
-      <div><span class="kicker">Заказать</span><h2>Нужен расчёт по этой категории?</h2><p class="muted">Опишите задачу, количество и желаемый срок. Детали уточним перед изготовлением.</p></div>
+  <section class="category-detail-info section section-light">
+    <div class="container category-detail-info-grid">
+      <div>
+        <p class="category-detail-overline">О направлении</p>
+        <h2>{{NOTE_TITLE}}</h2>
+      </div>
+      <div class="category-detail-info-copy">
+        <p>{{NOTE_TEXT}}</p>
+        <p>Перед изготовлением уточняем задачу, количество, требования к макету и способ получения заказа.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="category-detail-offers section">
+    <div class="container">
+      <div class="category-detail-section-head">
+        <h2>Наши предложения</h2>
+        <p>Базовые варианты для этого направления. Конкретное исполнение, количество и стоимость подбираем под задачу.</p>
+      </div>
+      <div class="category-detail-offer-grid">
+        <article><span>01</span><h3>{{ITEM_1_TITLE}}</h3><p>{{ITEM_1_TEXT}}</p><small>{{ITEM_1_NOTE}}</small></article>
+        <article><span>02</span><h3>{{ITEM_2_TITLE}}</h3><p>{{ITEM_2_TEXT}}</p><small>{{ITEM_2_NOTE}}</small></article>
+        <article><span>03</span><h3>{{ITEM_3_TITLE}}</h3><p>{{ITEM_3_TEXT}}</p><small>{{ITEM_3_NOTE}}</small></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="category-detail-examples section section-dark">
+    <div class="container">
+      <div class="category-detail-section-head category-detail-section-head-light">
+        <h2>Примеры работ</h2>
+        <p>Показываем общий характер результата. Конкретное оформление каждого заказа согласовываем отдельно.</p>
+      </div>
+      <div class="category-detail-example-grid" aria-label="Примеры работ">
+        <div class="category-detail-example category-detail-example-1" role="img" aria-label="Пример работы 1"></div>
+        <div class="category-detail-example category-detail-example-2" role="img" aria-label="Пример работы 2"></div>
+        <div class="category-detail-example category-detail-example-3" role="img" aria-label="Пример работы 3"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="category-detail-request section" id="category-request">
+    <div class="container category-detail-request-card">
+      <div>
+        <p class="category-detail-overline">Заявка на расчёт</p>
+        <h2>Опишите, что нужно изготовить</h2>
+        <p>Напишите количество, желаемый размер или формат и срок. Если есть исходник, фотография или логотип — приложите его при обращении.</p>
+      </div>
       <a class="btn btn-primary" href="index.html#request">Отправить задачу</a>
     </div>
   </section>
