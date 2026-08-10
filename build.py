@@ -113,9 +113,17 @@ public.mkdir(parents=True, exist_ok=True)
 for page in pages:
     output_stem = Path(page["output"]).stem
     page_data_path = page_data_dir / f"{output_stem}.json"
-    page_data = {}
-    if page_data_path.exists():
-        page_data = json.loads(page_data_path.read_text(encoding="utf-8"))
+
+    if not page_data_path.exists():
+        raise FileNotFoundError(f"Нет CMS-данных страницы: {page_data_path}")
+
+    page_data = json.loads(page_data_path.read_text(encoding="utf-8"))
+    seo = page_data.get("seo", {})
+    title = seo.get("title")
+    description = seo.get("description")
+
+    if not title or not description:
+        raise ValueError(f"Не заполнены SEO title/description для {page['output']}")
 
     context = {
         "site": site_data,
@@ -125,18 +133,13 @@ for page in pages:
     content_template = (src / "pages" / page["source"]).read_text(encoding="utf-8")
     content = render(content_template, context)
 
-    if not page_data:
-        for key, value in page.get("vars", {}).items():
-            content = content.replace("{{" + key + "}}", value)
+    if "{{" in content or "}}" in content:
+        raise ValueError(f"После сборки остались шаблонные переменные в {page['output']}")
 
     header_name = page.get("header", "default")
     if header_name not in header_templates:
         raise ValueError(f"Неизвестный вариант шапки: {header_name}")
     header = render(header_templates[header_name], context)
-
-    seo = page_data.get("seo", {})
-    title = seo.get("title", page["title"])
-    description = seo.get("description", page["description"])
 
     html = (
         layout.replace("{{TITLE}}", title)
