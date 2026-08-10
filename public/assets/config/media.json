@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "slots": [
+    {
+      "id": "home.hero",
+      "label": "Главная — Hero, композиция справа",
+      "src": "/assets/images/hero/hero-products.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    },
+    {
+      "id": "home.catalog.pens",
+      "label": "Главная — Популярные: ручки",
+      "src": "/assets/images/catalog/pens.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "home.catalog.notebooks",
+      "label": "Главная — Популярные: ежедневники",
+      "src": "/assets/images/catalog/notebooks.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "home.catalog.canvases",
+      "label": "Главная — Популярные: холсты",
+      "src": "/assets/images/catalog/canvas.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "home.catalog.mugs",
+      "label": "Главная — Популярные: кружки",
+      "src": "/assets/images/catalog/mugs.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "parker.hero",
+      "label": "Parker — Главное фото",
+      "src": "/assets/images/pens/parker-hero-approved-v10.png",
+      "x": 58,
+      "y": 48,
+      "zoom": 115,
+      "fit": "contain"
+    },
+    {
+      "id": "parker.price.box",
+      "label": "Parker — Что входит: ручка в коробке",
+      "src": "/assets/images/pens/parker-hero-approved-v10.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    },
+    {
+      "id": "parker.price.engraving",
+      "label": "Parker — Что входит: гравировка",
+      "src": "/assets/images/portfolio/pens/02.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "parker.price.packaging",
+      "label": "Parker — Что входит: упаковка",
+      "src": "/assets/images/portfolio/pens/04.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "parker.gallery.one",
+      "label": "Parker — Галерея: фото 1",
+      "src": "/assets/images/portfolio/pens/01.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "parker.gallery.two",
+      "label": "Parker — Галерея: фото 2",
+      "src": "/assets/images/portfolio/pens/02.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "parker.gallery.three",
+      "label": "Parker — Галерея: фото 3",
+      "src": "/assets/images/portfolio/pens/03.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "parker.gallery.four",
+      "label": "Parker — Галерея: фото 4",
+      "src": "/assets/images/portfolio/pens/04.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "categories.notebooks.hero",
+      "label": "Ежедневники — Главное фото / фон",
+      "src": "/assets/images/portfolio/notebooks/01.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "categories.mugs.hero",
+      "label": "Кружки — Главное фото / фон",
+      "src": "/assets/images/portfolio/mugs/01.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "categories.textile.hero",
+      "label": "Текстиль — Главное фото / фон",
+      "src": "/assets/images/hero/hero-products.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    },
+    {
+      "id": "categories.canvases.hero",
+      "label": "Холсты — Главное фото / фон",
+      "src": "/assets/images/portfolio/canvases/01.webp",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "cover"
+    },
+    {
+      "id": "categories.exlibris.hero",
+      "label": "Экслибрисы — Главное фото / фон",
+      "src": "/assets/images/hero/hero-products.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    },
+    {
+      "id": "categories.giftsets.hero",
+      "label": "Подарочные наборы — Главное фото / фон",
+      "src": "/assets/images/hero/hero-products.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    },
+    {
+      "id": "categories.seals.hero",
+      "label": "Печати и штампы — Главное фото / фон",
+      "src": "/assets/images/hero/hero-products.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    },
+    {
+      "id": "categories.logoStamps.hero",
+      "label": "Штампы с логотипом — Главное фото / фон",
+      "src": "/assets/images/hero/hero-products.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    },
+    {
+      "id": "categories.print.hero",
+      "label": "Полиграфия — Главное фото / фон",
+      "src": "/assets/images/hero/hero-products.png",
+      "x": 50,
+      "y": 50,
+      "zoom": 100,
+      "fit": "contain"
+    }
+  ]
+}

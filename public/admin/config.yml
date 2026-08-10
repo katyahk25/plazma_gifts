@@ -1,0 +1,79 @@
+backend:
+  name: github
+  repo: katyahk25/plazma_gifts
+  branch: feature/media-admin-v1
+  use_graphql: true
+
+media_folder: public/assets/uploads/media-admin
+public_folder: /assets/uploads/media-admin
+publish_mode: simple
+
+collections:
+  - name: visuals
+    label: Визуал сайта
+    files:
+      - label: Изображения и фоны
+        name: media
+        file: public/assets/config/media.json
+        format: json
+        fields:
+          - label: Версия
+            name: version
+            widget: hidden
+            default: 1
+          - label: Изображения
+            name: slots
+            widget: list
+            allow_add: false
+            collapsed: true
+            summary: "{{fields.label}}"
+            fields:
+              - label: ID
+                name: id
+                widget: hidden
+              - label: Блок
+                name: label
+                widget: string
+                hint: Служебное название блока. Лучше не менять.
+              - label: Изображение
+                name: src
+                widget: image
+                choose_url: false
+                media_library:
+                  config:
+                    multiple: false
+              - label: Положение по горизонтали
+                name: x
+                widget: number
+                value_type: int
+                min: 0
+                max: 100
+                step: 1
+                default: 50
+                hint: 0 — максимально влево, 50 — центр, 100 — максимально вправо.
+              - label: Положение по вертикали
+                name: y
+                widget: number
+                value_type: int
+                min: 0
+                max: 100
+                step: 1
+                default: 50
+                hint: 0 — вверх, 50 — центр, 100 — вниз.
+              - label: Масштаб, %
+                name: zoom
+                widget: number
+                value_type: int
+                min: 80
+                max: 180
+                step: 5
+                default: 100
+              - label: Режим изображения
+                name: fit
+                widget: select
+                options:
+                  - label: Заполнить блок с обрезкой
+                    value: cover
+                  - label: Показать изображение целиком
+                    value: contain
+                default: cover
