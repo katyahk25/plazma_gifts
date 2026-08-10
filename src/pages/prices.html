@@ -1,25 +1,24 @@
 <main>
   <section class="page-hero compact-page-hero">
     <div class="container page-hero-grid">
-      <div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>Цены</span></nav><span class="kicker">Ориентиры</span><h1>Цены</h1><p class="lead">Стоимость зависит от изделия, размера, количества, технологии и макета. Ниже — стартовые ориентиры по популярным позициям.</p></div>
-      <aside class="page-hero-note"><strong>Точный расчёт до заказа</strong><p>Перед оплатой фиксируем состав заказа, стоимость изготовления и условия доставки.</p></aside>
+      <div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>{{page.hero.breadcrumb}}</span></nav><span class="kicker">{{page.hero.kicker}}</span><h1>{{page.hero.heading}}</h1><p class="lead">{{page.hero.lead}}</p></div>
+      <aside class="page-hero-note"><strong>{{page.hero.note_title}}</strong><p>{{page.hero.note_text}}</p></aside>
     </div>
   </section>
 
   <section class="section section-light">
     <div class="container">
       <div class="price-grid">
-        <article class="price-card"><span>Лазерная гравировка</span><h2>Ручки</h2><strong>от 3 000 ₽</strong><p>Ручка Parker Jotter, макет, индивидуальная гравировка и упаковка.</p><a class="price-card-link" href="pens.html">Подробнее →</a></article>
-        <article class="price-card"><span>УФ-печать</span><h2>Ежедневники</h2><strong>от 1 650 ₽</strong><p>Ежедневник с персональным оформлением обложки.</p></article>
-        <article class="price-card"><span>Печать на холсте</span><h2>Холсты</h2><strong>от 990 ₽</strong><p>Итоговая цена зависит от размера и подготовки изображения.</p></article>
-        <article class="price-card"><span>Изготовление</span><h2>Печати и штампы</h2><strong>от 700 ₽</strong><p>Стоимость зависит от размера и выбранной оснастки.</p></article>
+{{#each page.cards}}
+        <article class="price-card"><span>{{eyebrow}}</span><h2>{{title}}</h2><strong>{{price}}</strong><p>{{text}}</p>{{#if url}}<a class="price-card-link" href="{{url}}">{{link_label}}</a>{{/if}}</article>
+{{/each}}
       </div>
-      <p class="price-disclaimer">Цены указаны как ориентир для структуры сайта. Перед публикацией проверим актуальный прайс и добавим остальные категории.</p>
+      <p class="price-disclaimer">{{page.disclaimer}}</p>
     </div>
   </section>
 
   <section class="section">
-    <div class="container two-column-info"><div><span class="kicker">Индивидуальный расчёт</span><h2>Что нужно прислать</h2></div><div class="check-list"><p>Какое изделие требуется</p><p>Количество</p><p>Нужный размер</p><p>Текст, фотографию или логотип</p><p>Желаемый срок</p><p>Город доставки</p></div></div>
-    <div class="container centered-action"><a class="btn btn-primary" href="index.html#request">Получить точную стоимость</a></div>
+    <div class="container two-column-info"><div><span class="kicker">{{page.requirements.kicker}}</span><h2>{{page.requirements.heading}}</h2></div><div class="check-list">{{#each page.requirements.items}}<p>{{value}}</p>{{/each}}</div></div>
+    <div class="container centered-action"><a class="btn btn-primary" href="{{page.cta.url}}">{{page.cta.label}}</a></div>
   </section>
 </main>
