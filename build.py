@@ -2,6 +2,8 @@ import json
 import re
 from pathlib import Path
 
+from cms_admin import build_admin
+
 root = Path(__file__).resolve().parent
 src = root / "src"
 public = root / "public"
@@ -152,3 +154,6 @@ for page in pages:
 
     (public / page["output"]).write_text(html, encoding="utf-8")
     print(f"Готово: public/{page['output']}")
+
+
+build_admin(src=src, public=public, data_dir=data_dir, pages=pages)
