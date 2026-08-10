@@ -10,7 +10,7 @@ page_data_dir = data_dir / "pages"
 
 layout = (src / "layout.html").read_text(encoding="utf-8")
 footer = (src / "partials/footer.html").read_text(encoding="utf-8")
-headers = {
+header_templates = {
     "default": (src / "partials/header.html").read_text(encoding="utf-8"),
     "pens": (src / "partials/header-pens.html").read_text(encoding="utf-8"),
 }
@@ -96,8 +96,9 @@ for page in pages:
             content = content.replace("{{" + key + "}}", value)
 
     header_name = page.get("header", "default")
-    if header_name not in headers:
+    if header_name not in header_templates:
         raise ValueError(f"Неизвестный вариант шапки: {header_name}")
+    header = render(header_templates[header_name], context)
 
     seo = page_data.get("seo", {})
     title = seo.get("title", page["title"])
@@ -107,7 +108,7 @@ for page in pages:
         layout.replace("{{TITLE}}", title)
         .replace("{{DESCRIPTION}}", description)
         .replace("{{BODY_CLASS}}", page["body_class"])
-        .replace("{{HEADER}}", headers[header_name])
+        .replace("{{HEADER}}", header)
         .replace("{{CONTENT}}", content)
         .replace("{{FOOTER}}", footer)
     )

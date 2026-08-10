@@ -1,48 +1,38 @@
 <header class="site-header" data-site-header>
   <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="ПЛАЗМА — главная">
-      <span class="wordmark-box"><span class="wordmark-text">ПЛАЗМА</span></span>
+    <a class="brand" href="{{site.header.brand_url}}" aria-label="{{site.header.brand_aria}}">
+      <span class="wordmark-box"><span class="wordmark-text">{{site.brand.name}}</span></span>
     </a>
 
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="{{site.header.menu_label}}">
       <span></span><span></span><span></span>
     </button>
 
     <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
       <div class="nav-item nav-item-dropdown">
-        <a href="about.html" data-nav="about">О нас <span class="nav-caret" aria-hidden="true">⌄</span></a>
-        <div class="nav-dropdown" aria-label="Разделы о нас">
-          <a href="about.html#who-we-are">Кто мы</a>
-          <a href="about.html#experience">Наш опыт</a>
-        </div>
+        <a href="{{site.navigation.about.url}}" data-nav="{{site.navigation.about.data_nav}}">{{site.navigation.about.label}} <span class="nav-caret" aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown" aria-label="{{site.navigation.about.aria}}">
+{{#each site.navigation.about.items}}          <a href="{{url}}">{{label}}</a>
+{{/each}}        </div>
       </div>
 
       <div class="nav-item nav-item-dropdown nav-item-gifts">
-        <a href="gifts.html" data-nav="gifts">Подарки <span class="nav-caret" aria-hidden="true">⌄</span></a>
-        <div class="nav-dropdown" aria-label="Категории подарков">
-          <a href="pens.html">Ручки с гравировкой</a>
-          <a href="notebooks.html">Ежедневники</a>
-          <a href="mugs.html">Кружки</a>
-          <a href="textile.html">Текстиль</a>
-          <a href="canvases.html">Холсты</a>
-          <a href="exlibris.html">Экслибрисы</a>
-          <a href="gift-sets.html">Подарочные наборы</a>
-        </div>
+        <a href="{{site.navigation.gifts.url}}" data-nav="{{site.navigation.gifts.data_nav}}">{{site.navigation.gifts.label}} <span class="nav-caret" aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown" aria-label="{{site.navigation.gifts.aria}}">
+{{#each site.navigation.gifts.items}}          <a href="{{url}}">{{label}}</a>
+{{/each}}        </div>
       </div>
 
       <div class="nav-item nav-item-dropdown nav-item-business">
-        <a href="business.html" data-nav="business">Для бизнеса <span class="nav-caret" aria-hidden="true">⌄</span></a>
-        <div class="nav-dropdown" aria-label="Категории для бизнеса">
-          <a href="seals-stamps.html">Печати и штампы</a>
-          <a href="logo-stamps.html">Штампы с логотипом</a>
-          <a href="print-materials.html">Баннеры, визитки, листовки</a>
-        </div>
+        <a href="{{site.navigation.business.url}}" data-nav="{{site.navigation.business.data_nav}}">{{site.navigation.business.label}} <span class="nav-caret" aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown" aria-label="{{site.navigation.business.aria}}">
+{{#each site.navigation.business.items}}          <a href="{{url}}">{{label}}</a>
+{{/each}}        </div>
       </div>
 
-      <a href="delivery.html" data-nav="delivery">Доставка и оплата</a>
-      <a href="contacts.html" data-nav="contacts">Контакты</a>
-    </nav>
+{{#each site.navigation.standalone}}      <a href="{{url}}" data-nav="{{data_nav}}">{{label}}</a>
+{{/each}}    </nav>
 
-    <a class="btn btn-primary header-cta" href="index.html#request">Рассчитать заказ</a>
+    <a class="btn btn-primary header-cta" href="{{site.header.cta.url}}">{{site.header.cta.label}}</a>
   </div>
 </header>
