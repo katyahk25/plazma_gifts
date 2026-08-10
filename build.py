@@ -19,8 +19,11 @@ pages = json.loads((data_dir / "pages.json").read_text(encoding="utf-8"))
 
 MISSING = object()
 
-EACH_RE = re.compile(r"{{#each\s+([A-Za-z0-9_.@-]+)}}(.*?){{/each}}", re.S)
-IF_RE = re.compile(r"{{#if\s+([A-Za-z0-9_.@-]+)}}(.*?){{/if}}", re.S)
+OPEN_BLOCK_RE = re.compile(r"{{#(each|if)\s+([A-Za-z0-9_.@-]+)}}")
+BLOCK_TOKEN_RE = re.compile(
+    r"{{#(?P<open_kind>each|if)\s+(?P<path>[A-Za-z0-9_.@-]+)}}"
+    r"|{{/(?P<close_kind>each|if)}}"
+)
 VAR_RE = re.compile(r"{{\s*([A-Za-z0-9_.@-]+)\s*}}")
 
 
@@ -34,32 +37,63 @@ def resolve(context, path):
     return value
 
 
+def render_blocks(template, context):
+    opening = OPEN_BLOCK_RE.search(template)
+    if not opening:
+        return template
+
+    stack = [opening.group(1)]
+    closing = None
+
+    for token in BLOCK_TOKEN_RE.finditer(template, opening.end()):
+        open_kind = token.group("open_kind")
+        close_kind = token.group("close_kind")
+
+        if open_kind:
+            stack.append(open_kind)
+            continue
+
+        if not stack or stack[-1] != close_kind:
+            raise ValueError(f"Некорректно закрыт шаблонный блок: {close_kind}")
+
+        stack.pop()
+        if not stack:
+            closing = token
+            break
+
+    if closing is None:
+        raise ValueError(f"Не закрыт шаблонный блок: {opening.group(1)} {opening.group(2)}")
+
+    before = template[: opening.start()]
+    inner = template[opening.end() : closing.start()]
+    after = template[closing.end() :]
+    block_type = opening.group(1)
+    path = opening.group(2)
+    value = resolve(context, path)
+
+    if block_type == "each":
+        if value is MISSING or not isinstance(value, list):
+            rendered_block = ""
+        else:
+            rendered_items = []
+            for index, item in enumerate(value):
+                child = dict(context)
+                child["@index"] = index
+                child["item"] = item
+                if isinstance(item, dict):
+                    child.update(item)
+                else:
+                    child["value"] = item
+                rendered_items.append(render(inner, child))
+            rendered_block = "".join(rendered_items)
+    else:
+        rendered_block = render(inner, context) if value is not MISSING and value else ""
+
+    return render_blocks(before + rendered_block + after, context)
+
+
 def render(template, context):
-    def render_each(match):
-        items = resolve(context, match.group(1))
-        if items is MISSING or not isinstance(items, list):
-            return ""
-        rendered = []
-        for index, item in enumerate(items):
-            child = dict(context)
-            child["@index"] = index
-            child["item"] = item
-            if isinstance(item, dict):
-                child.update(item)
-            else:
-                child["value"] = item
-            rendered.append(render(match.group(2), child))
-        return "".join(rendered)
-
-    def render_if(match):
-        value = resolve(context, match.group(1))
-        return render(match.group(2), context) if value is not MISSING and value else ""
-
-    previous = None
-    while previous != template:
-        previous = template
-        template = EACH_RE.sub(render_each, template)
-        template = IF_RE.sub(render_if, template)
+    template = render_blocks(template, context)
 
     def render_var(match):
         value = resolve(context, match.group(1))
