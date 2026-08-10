@@ -1,29 +1,37 @@
 {
   "version": 1,
-  "slots": {
-    "home.hero": {"page":"Главная","label":"Hero — композиция справа","selector":".hero-blend-visual img","mode":"img","src":"assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"},
-    "home.catalog.pens": {"page":"Главная","label":"Популярные — ручки","selector":".popular-grid .catalog-card:nth-child(1) .popular-media img","mode":"img","src":"assets/images/catalog/pens.png","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "home.catalog.notebooks": {"page":"Главная","label":"Популярные — ежедневники","selector":".popular-grid .catalog-card:nth-child(2) .popular-media img","mode":"img","src":"assets/images/catalog/notebooks.png","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "home.catalog.canvases": {"page":"Главная","label":"Популярные — холсты","selector":".popular-grid .catalog-card:nth-child(3) .popular-media img","mode":"img","src":"assets/images/catalog/canvas.png","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "home.catalog.mugs": {"page":"Главная","label":"Популярные — кружки","selector":".popular-grid .catalog-card:nth-child(4) .popular-media img","mode":"img","src":"assets/images/catalog/mugs.png","x":50,"y":50,"zoom":100,"fit":"cover"},
-
-    "parker.hero": {"page":"Parker","label":"Главное фото Parker","selector":".parker-v10-visual img","mode":"img","src":"assets/images/pens/parker-hero-approved-v10.png","x":58,"y":48,"zoom":100,"fit":"contain"},
-    "parker.price.box": {"page":"Parker","label":"Что входит — Parker в коробке","selector":".price-map-parker-photo img","mode":"img","src":"assets/images/pens/parker-hero-approved-v10.png","x":50,"y":50,"zoom":100,"fit":"contain"},
-    "parker.price.engraving": {"page":"Parker","label":"Что входит — гравировка","selector":".price-map-engraving-photo img","mode":"img","src":"assets/images/portfolio/pens/02.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "parker.price.packaging": {"page":"Parker","label":"Что входит — упаковка","selector":".price-map-packing-photo img","mode":"img","src":"assets/images/portfolio/pens/04.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "parker.gallery.1": {"page":"Parker","label":"Галерея — фото 1","selector":"#pen-gallery .gallery-thumbs button:nth-child(1) img","mode":"img","src":"assets/images/portfolio/pens/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "parker.gallery.2": {"page":"Parker","label":"Галерея — фото 2","selector":"#pen-gallery .gallery-thumbs button:nth-child(2) img","mode":"img","src":"assets/images/portfolio/pens/02.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "parker.gallery.3": {"page":"Parker","label":"Галерея — фото 3","selector":"#pen-gallery .gallery-thumbs button:nth-child(3) img","mode":"img","src":"assets/images/portfolio/pens/03.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "parker.gallery.4": {"page":"Parker","label":"Галерея — фото 4","selector":"#pen-gallery .gallery-thumbs button:nth-child(4) img","mode":"img","src":"assets/images/portfolio/pens/04.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-
-    "category.notebooks.hero": {"page":"Ежедневники","label":"Главное фото / фон","selector":".page-notebooks .category-detail-visual","mode":"background","src":"assets/images/portfolio/notebooks/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "category.mugs.hero": {"page":"Кружки","label":"Главное фото / фон","selector":".page-mugs .category-detail-visual","mode":"background","src":"assets/images/portfolio/mugs/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "category.textile.hero": {"page":"Текстиль","label":"Главное фото / фон","selector":".page-textile .category-detail-visual","mode":"background","src":"assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"},
-    "category.canvases.hero": {"page":"Холсты","label":"Главное фото / фон","selector":".page-canvases .category-detail-visual","mode":"background","src":"assets/images/portfolio/canvases/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
-    "category.exlibris.hero": {"page":"Экслибрисы","label":"Главное фото / фон","selector":".page-exlibris .category-detail-visual","mode":"background","src":"assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"},
-    "category.giftsets.hero": {"page":"Подарочные наборы","label":"Главное фото / фон","selector":".page-gift-sets .category-detail-visual","mode":"background","src":"assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"},
-    "category.seals.hero": {"page":"Печати и штампы","label":"Главное фото / фон","selector":".page-seals-stamps .category-detail-visual","mode":"background","src":"assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"},
-    "category.logo-stamps.hero": {"page":"Штампы с логотипом","label":"Главное фото / фон","selector":".page-logo-stamps .category-detail-visual","mode":"background","src":"assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"},
-    "category.print.hero": {"page":"Полиграфия","label":"Главное фото / фон","selector":".page-print-materials .category-detail-visual","mode":"background","src":"assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"}
+  "home": {
+    "hero": {"src":"/assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"},
+    "catalog": {
+      "pens": {"src":"/assets/images/catalog/pens.png","x":50,"y":50,"zoom":100,"fit":"cover"},
+      "notebooks": {"src":"/assets/images/catalog/notebooks.png","x":50,"y":50,"zoom":100,"fit":"cover"},
+      "canvases": {"src":"/assets/images/catalog/canvas.png","x":50,"y":50,"zoom":100,"fit":"cover"},
+      "mugs": {"src":"/assets/images/catalog/mugs.png","x":50,"y":50,"zoom":100,"fit":"cover"}
+    }
+  },
+  "parker": {
+    "hero": {"src":"/assets/images/pens/parker-hero-approved-v10.png","x":58,"y":48,"zoom":100,"fit":"contain"},
+    "price": {
+      "box": {"src":"/assets/images/pens/parker-hero-approved-v10.png","x":50,"y":50,"zoom":100,"fit":"contain"},
+      "engraving": {"src":"/assets/images/portfolio/pens/02.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
+      "packaging": {"src":"/assets/images/portfolio/pens/04.webp","x":50,"y":50,"zoom":100,"fit":"cover"}
+    },
+    "gallery": {
+      "one": {"src":"/assets/images/portfolio/pens/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
+      "two": {"src":"/assets/images/portfolio/pens/02.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
+      "three": {"src":"/assets/images/portfolio/pens/03.webp","x":50,"y":50,"zoom":100,"fit":"cover"},
+      "four": {"src":"/assets/images/portfolio/pens/04.webp","x":50,"y":50,"zoom":100,"fit":"cover"}
+    }
+  },
+  "categories": {
+    "notebooks": {"hero":{"src":"/assets/images/portfolio/notebooks/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"}},
+    "mugs": {"hero":{"src":"/assets/images/portfolio/mugs/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"}},
+    "textile": {"hero":{"src":"/assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"}},
+    "canvases": {"hero":{"src":"/assets/images/portfolio/canvases/01.webp","x":50,"y":50,"zoom":100,"fit":"cover"}},
+    "exlibris": {"hero":{"src":"/assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"}},
+    "giftsets": {"hero":{"src":"/assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"}},
+    "seals": {"hero":{"src":"/assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"}},
+    "logoStamps": {"hero":{"src":"/assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"}},
+    "print": {"hero":{"src":"/assets/images/hero/hero-products.png","x":50,"y":50,"zoom":100,"fit":"contain"}}
   }
 }
