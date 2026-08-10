@@ -1,5 +1,5 @@
 (() => {
-  const slots = [
+  const targets = [
     ['home.hero', '.hero-blend-visual img', 'img'],
     ['home.catalog.pens', '.popular-grid .catalog-card:nth-child(1) .popular-media img', 'img'],
     ['home.catalog.notebooks', '.popular-grid .catalog-card:nth-child(2) .popular-media img', 'img'],
@@ -24,8 +24,6 @@
     ['categories.print.hero', '.page-print-materials .category-detail-visual', 'background'],
   ];
 
-  const readPath = (obj, path) => path.split('.').reduce((value, key) => value && value[key], obj);
-
   const applyImage = (node, slot) => {
     node.src = slot.src;
     node.style.objectPosition = `${Number(slot.x ?? 50)}% ${Number(slot.y ?? 50)}%`;
@@ -47,20 +45,19 @@
   fetch('/assets/config/media.json', { cache: 'no-store' })
     .then(response => response.ok ? response.json() : Promise.reject())
     .then(config => {
-      slots.forEach(([path, selector, mode], index) => {
-        const slot = readPath(config, path);
+      const byId = new Map((config.slots || []).map(slot => [slot.id, slot]));
+      targets.forEach(([id, selector, mode], targetIndex) => {
+        const slot = byId.get(id);
         if (!slot?.src) return;
         document.querySelectorAll(selector).forEach(node => {
-          if (mode === 'background') applyBackground(node, slot);
-          else {
-            applyImage(node, slot);
-            if (mode === 'gallery') {
-              const button = node.closest('[data-gallery-thumb]');
-              if (button) button.dataset.src = slot.src;
-              if (index === 9) {
-                const main = document.querySelector('#pen-gallery [data-gallery-main]');
-                if (main) applyImage(main, slot);
-              }
+          if (mode === 'background') return applyBackground(node, slot);
+          applyImage(node, slot);
+          if (mode === 'gallery') {
+            const button = node.closest('[data-gallery-thumb]');
+            if (button) button.dataset.src = slot.src;
+            if (targetIndex === 9) {
+              const main = document.querySelector('#pen-gallery [data-gallery-main]');
+              if (main) applyImage(main, slot);
             }
           }
         });
