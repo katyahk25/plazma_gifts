@@ -6,3 +6,10 @@ Thumbs.db
 desktop.ini
 *.tmp
 *.bak
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
