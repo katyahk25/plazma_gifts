@@ -12,6 +12,7 @@ const state = {
   pendingUploads: new Map(),
   objectUrls: new Set(),
   blockElements: new Map(),
+  pendingPreviewHash: '',
 };
 
 const els = {
@@ -87,23 +88,30 @@ function getPath(root, path) {
 function setPath(root, path, value) {
   const parts = parsePath(path);
   let current = root;
-  for (let i = 0; i < parts.length - 1; i += 1) current = current[parts[i]];
+  for (let index = 0; index < parts.length - 1; index += 1) {
+    current = current[parts[index]];
+  }
   current[parts.at(-1)] = value;
 }
 
 function flatten(value, path = '', scope = 'page') {
   const result = [];
+
   if (Array.isArray(value)) {
-    value.forEach((item, index) => result.push(...flatten(item, `${path}[${index}]`, scope)));
-    return result;
-  }
-  if (value && typeof value === 'object') {
-    Object.entries(value).forEach(([key, item]) => {
-      const next = path ? `${path}.${key}` : key;
-      result.push(...flatten(item, next, scope));
+    value.forEach((item, index) => {
+      result.push(...flatten(item, `${path}[${index}]`, scope));
     });
     return result;
   }
+
+  if (value && typeof value === 'object') {
+    Object.entries(value).forEach(([key, item]) => {
+      const nextPath = path ? `${path}.${key}` : key;
+      result.push(...flatten(item, nextPath, scope));
+    });
+    return result;
+  }
+
   result.push({ scope, path, value, normalized: normalize(value) });
   return result;
 }
@@ -127,14 +135,31 @@ function fieldKey(field) {
   return `${field.scope}:${field.path}`;
 }
 
+function hasUnsavedChanges() {
+  return state.dirtyScopes.size > 0 || state.pendingUploads.size > 0;
+}
+
 function labelFromPath(path) {
   const last = parsePath(path).at(-1) || 'Поле';
   const labels = {
-    heading: 'Заголовок', title: 'Заголовок', lead: 'Описание', text: 'Текст',
-    label: 'Надпись', price: 'Цена', image: 'Изображение', src: 'Изображение',
-    alt: 'ALT-текст', image_alt: 'ALT-текст', kicker: 'Надзаголовок',
-    description: 'Описание', question: 'Вопрос', answer: 'Ответ', url: 'Ссылка',
-    breadcrumb: 'Хлебные крошки', hint: 'Подсказка', note: 'Примечание',
+    heading: 'Заголовок',
+    title: 'Заголовок',
+    lead: 'Описание',
+    text: 'Текст',
+    label: 'Надпись',
+    price: 'Цена',
+    image: 'Изображение',
+    src: 'Изображение',
+    alt: 'ALT-текст',
+    image_alt: 'ALT-текст',
+    kicker: 'Надзаголовок',
+    description: 'Описание',
+    question: 'Вопрос',
+    answer: 'Ответ',
+    url: 'Ссылка',
+    breadcrumb: 'Хлебные крошки',
+    hint: 'Подсказка',
+    note: 'Примечание',
   };
   return labels[last] || last.replaceAll('_', ' ');
 }
@@ -147,11 +172,25 @@ function blockLabel(key, block) {
     || key.replaceAll('_', ' ');
 }
 
+function setStatus(message, type = 'neutral') {
+  els.status.textContent = message;
+  const colors = {
+    neutral: '#667085',
+    dirty: '#7d1736',
+    success: '#18794e',
+    error: '#b42318',
+  };
+  els.status.style.color = colors[type] || colors.neutral;
+}
+
 function syncDirtyUi(message = null) {
-  const dirty = state.dirtyScopes.size > 0 || state.pendingUploads.size > 0;
+  const dirty = hasUnsavedChanges();
   els.save.disabled = !dirty;
-  els.status.textContent = message || (dirty ? 'Есть несохранённые изменения' : 'Без изменений');
-  els.status.style.color = dirty ? '#7d1736' : '#667085';
+  if (message) {
+    setStatus(message, dirty ? 'dirty' : 'neutral');
+  } else {
+    setStatus(dirty ? 'Есть несохранённые изменения' : 'Без изменений', dirty ? 'dirty' : 'neutral');
+  }
 }
 
 function markDirty(scope, message = null) {
@@ -163,6 +202,34 @@ function clearDirty() {
   state.dirtyScopes.clear();
   state.pendingUploads.clear();
   syncDirtyUi();
+}
+
+function syncAdminUrl(stem) {
+  const url = new URL(location.href);
+  url.searchParams.set('page', stem);
+  history.replaceState({ page: stem }, '', `${url.pathname}${url.search}`);
+}
+
+function pageFromStem(stem) {
+  return state.manifest?.pages?.find(page => page.stem === stem) || null;
+}
+
+function pageFromUrl(url) {
+  const segments = url.pathname.split('/').filter(Boolean);
+  const fileName = decodeURIComponent(segments.at(-1) || 'index.html');
+  return state.manifest?.pages?.find(page => page.output === fileName) || null;
+}
+
+function scrollPreviewToHash(hash) {
+  if (!hash) return;
+  const doc = els.iframe.contentDocument;
+  if (!doc) return;
+
+  try {
+    doc.querySelector(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch {
+    setStatus(`Не удалось открыть якорь ${hash}`, 'error');
+  }
 }
 
 function ownText(element) {
@@ -190,6 +257,7 @@ function isImageField(field) {
 
 function candidatesForElement(element) {
   if (!element) return [];
+
   if (element.tagName === 'IMG') {
     const image = relativeImagePath(element);
     return state.fields.filter(field => (
@@ -204,12 +272,17 @@ function candidatesForElement(element) {
   const visibleFields = state.fields.filter(field => {
     if (typeof field.value !== 'string' || !field.normalized) return false;
     const last = parsePath(field.path).at(-1);
-    return !['url', 'src', 'image', 'image_alt', 'alt', 'class_name', 'card_class', 'active_class'].includes(last);
+    return ![
+      'url', 'src', 'image', 'image_alt', 'alt',
+      'class_name', 'card_class', 'active_class',
+    ].includes(last);
   });
 
   let matches = visibleFields.filter(field => field.normalized === text);
   if (!matches.length && text.length > 3) {
-    matches = visibleFields.filter(field => field.normalized.length > 2 && text.includes(field.normalized));
+    matches = visibleFields.filter(field => (
+      field.normalized.length > 2 && text.includes(field.normalized)
+    ));
   }
   return matches;
 }
@@ -241,10 +314,14 @@ function itemContextForField(field, element) {
   if (!field) return null;
   const match = field.path.match(/^(.*)\[(\d+)\](?:\..*)?$/);
   if (!match) return null;
+
   const arrayPath = match[1];
   const index = Number(match[2]);
   const array = getPath(docForScope(field.scope), arrayPath);
-  if (!Array.isArray(array) || !Number.isInteger(index) || index < 0 || index >= array.length) return null;
+
+  if (!Array.isArray(array) || !Number.isInteger(index) || index < 0 || index >= array.length) {
+    return null;
+  }
 
   let itemElement = element;
   if (arrayPath.endsWith('.tags')) {
@@ -261,10 +338,12 @@ function itemContextForField(field, element) {
 function updateBlockControl() {
   const key = topBlockKey(state.selectedField);
   state.selectedBlockKey = key;
+
   if (!key) {
     els.blockControl.hidden = true;
     return;
   }
+
   const block = state.docs.page[key];
   els.blockControl.hidden = false;
   els.blockControlTitle.textContent = blockLabel(key, block);
@@ -275,12 +354,16 @@ function updateItemActions() {
   state.selectedItem = itemContextForField(state.selectedField, state.selectedElement);
   els.itemActions.hidden = !state.selectedItem;
   if (!state.selectedItem) return;
-  const buttons = els.itemActions.querySelectorAll('[data-item-action]');
-  buttons.forEach(button => {
+
+  els.itemActions.querySelectorAll('[data-item-action]').forEach(button => {
     const action = button.dataset.itemAction;
-    if (action === 'up') button.disabled = state.selectedItem.index === 0;
-    else if (action === 'down') button.disabled = state.selectedItem.index === state.selectedItem.array.length - 1;
-    else button.disabled = false;
+    if (action === 'up') {
+      button.disabled = state.selectedItem.index === 0;
+    } else if (action === 'down') {
+      button.disabled = state.selectedItem.index === state.selectedItem.array.length - 1;
+    } else {
+      button.disabled = false;
+    }
   });
 }
 
@@ -297,12 +380,13 @@ function selectField(field, element) {
 
   const image = isImageField(field) || element?.tagName === 'IMG';
   els.imageTools.hidden = !image;
+
   if (image) {
     const pending = state.pendingUploads.get(fieldKey(field));
     els.imagePreview.src = pending?.previewUrl || element?.currentSrc || element?.src || field.value || '';
-    els.note.textContent = 'Выберите новый файл или измените путь вручную. Новое изображение попадёт в GitHub вместе с остальными изменениями после «Сохранить».';
+    els.note.textContent = 'Выберите новый файл или измените путь вручную. Изображение сохранится в GitHub вместе с остальными изменениями.';
   } else {
-    els.note.textContent = 'Изменение сразу показывается в предпросмотре. После «Сохранить» оно записывается в данные сайта.';
+    els.note.textContent = 'Изменение сразу показывается в предпросмотре и записывается после «Сохранить».';
   }
 
   updateBlockControl();
@@ -321,6 +405,7 @@ function showCandidates(candidates, element) {
   els.blockControl.hidden = true;
   els.itemActions.hidden = true;
   els.candidates.innerHTML = '';
+
   candidates.forEach(field => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -328,6 +413,7 @@ function showCandidates(candidates, element) {
     button.addEventListener('click', () => selectField(field, element));
     els.candidates.append(button);
   });
+
   els.candidates.hidden = false;
 }
 
@@ -339,32 +425,104 @@ function clearSelection(message = null) {
   state.selectedBlockKey = null;
   els.content.hidden = true;
   els.empty.hidden = false;
+
   if (message) {
     els.empty.innerHTML = `<strong>${message}</strong><p>Выберите следующий элемент на странице.</p>`;
   }
 }
 
-function handlePreviewClick(event) {
-  event.preventDefault();
-  event.stopPropagation();
-  let target = event.target;
+async function followPreviewLink(anchor) {
+  const rawHref = anchor.getAttribute('href') || '';
+  if (!rawHref || rawHref === '#') return;
+
+  if (rawHref.startsWith('#')) {
+    scrollPreviewToHash(rawHref);
+    return;
+  }
+
+  let url;
+  try {
+    url = new URL(rawHref, els.iframe.contentWindow.location.href);
+  } catch {
+    setStatus(`Некорректная ссылка: ${rawHref}`, 'error');
+    return;
+  }
+
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    window.open(url.href, '_blank', 'noopener');
+    return;
+  }
+
+  if (url.origin !== location.origin) {
+    window.open(url.href, '_blank', 'noopener');
+    return;
+  }
+
+  const page = pageFromUrl(url);
+  if (!page) {
+    setStatus(`Страница из ссылки не найдена в CMS: ${url.pathname}`, 'error');
+    return;
+  }
+
+  if (page.stem === state.page?.stem) {
+    scrollPreviewToHash(url.hash);
+    return;
+  }
+
+  await loadPage(page.stem, { hash: url.hash });
+}
+
+async function handlePreviewClick(event) {
+  const target = event.target;
   if (!(target instanceof els.iframe.contentWindow.HTMLElement)) return;
 
+  const anchor = target.closest('a[href]');
+  if (anchor && !event.altKey) {
+    event.preventDefault();
+    event.stopPropagation();
+    await followPreviewLink(anchor);
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
   let candidates = candidatesForElement(target);
-  if (candidates.length === 1) return selectField(candidates[0], target);
-  if (candidates.length > 1) return showCandidates(candidates, target);
+  if (candidates.length === 1) {
+    selectField(candidates[0], target);
+    return;
+  }
+  if (candidates.length > 1) {
+    showCandidates(candidates, target);
+    return;
+  }
 
   const descendant = findDescendantCandidates(target);
   if (descendant) {
-    if (descendant.candidates.length === 1) return selectField(descendant.candidates[0], descendant.element);
-    return showCandidates(descendant.candidates, descendant.element);
+    if (descendant.candidates.length === 1) {
+      selectField(descendant.candidates[0], descendant.element);
+    } else {
+      showCandidates(descendant.candidates, descendant.element);
+    }
+    return;
   }
 
-  for (let parent = target.parentElement; parent && parent !== target.ownerDocument.body; parent = parent.parentElement) {
+  for (
+    let parent = target.parentElement;
+    parent && parent !== target.ownerDocument.body;
+    parent = parent.parentElement
+  ) {
     candidates = candidatesForElement(parent);
-    if (candidates.length === 1) return selectField(candidates[0], target);
-    if (candidates.length > 1) return showCandidates(candidates, target);
+    if (candidates.length === 1) {
+      selectField(candidates[0], target);
+      return;
+    }
+    if (candidates.length > 1) {
+      showCandidates(candidates, target);
+      return;
+    }
   }
+
   clearSelection('У этого элемента пока нет отдельного поля');
 }
 
@@ -382,16 +540,37 @@ function injectPreviewStyles(doc) {
 function attachPreviewEditing() {
   const doc = els.iframe.contentDocument;
   if (!doc) return;
+
   state.blockElements.clear();
   injectPreviewStyles(doc);
   doc.documentElement.style.scrollBehavior = 'auto';
   doc.addEventListener('click', handlePreviewClick, true);
+
   doc.addEventListener('mouseover', event => {
     const target = event.target;
     if (!(target instanceof els.iframe.contentWindow.HTMLElement)) return;
-    if (candidatesForElement(target).length || findDescendantCandidates(target)) target.classList.add('cms-hover');
+
+    const anchor = target.closest?.('a[href]');
+    if (anchor || candidatesForElement(target).length || findDescendantCandidates(target)) {
+      target.classList.add('cms-hover');
+    }
   }, true);
-  doc.addEventListener('mouseout', event => event.target?.classList?.remove('cms-hover'), true);
+
+  doc.addEventListener('mouseout', event => {
+    event.target?.classList?.remove('cms-hover');
+  }, true);
+
+  doc.querySelectorAll('a[href]').forEach(link => {
+    link.title = link.title
+      ? `${link.title} · Alt+клик — редактировать текст`
+      : 'Клик — перейти · Alt+клик — редактировать текст ссылки';
+  });
+
+  if (state.pendingPreviewHash) {
+    const hash = state.pendingPreviewHash;
+    state.pendingPreviewHash = '';
+    requestAnimationFrame(() => scrollPreviewToHash(hash));
+  }
 }
 
 function updateLivePreview(value, oldValue) {
@@ -405,11 +584,15 @@ function updateLivePreview(value, oldValue) {
 
   const directNodes = [...element.childNodes].filter(node => node.nodeType === 3);
   const matchingNode = directNodes.find(node => normalize(node.textContent) === normalize(oldValue));
+
   if (matchingNode) {
     matchingNode.textContent = value;
     return;
   }
-  if (element.children.length === 0) element.textContent = value;
+
+  if (element.children.length === 0) {
+    element.textContent = value;
+  }
 }
 
 function findBlockElement(key) {
@@ -419,9 +602,10 @@ function findBlockElement(key) {
   const doc = els.iframe.contentDocument;
   const block = state.docs.page?.[key];
   if (!doc || !block) return null;
+
   const blockFields = flatten(block, key, 'page')
     .filter(field => typeof field.value === 'string' && field.normalized.length > 2)
-    .sort((a, b) => b.normalized.length - a.normalized.length);
+    .sort((left, right) => right.normalized.length - left.normalized.length);
 
   const nodes = [...doc.querySelectorAll('h1,h2,h3,h4,p,span,strong,a')];
   for (const field of blockFields) {
@@ -432,34 +616,45 @@ function findBlockElement(key) {
       return section;
     }
   }
+
   return null;
 }
 
 function applyBlockVisibility(key, visible) {
   const section = findBlockElement(key);
-  if (section) section.dataset.cmsHiddenPreview = visible ? 'false' : 'true';
-  else if (visible) syncDirtyUi('Блок появится после сохранения и пересборки превью');
+  if (section) {
+    section.dataset.cmsHiddenPreview = visible ? 'false' : 'true';
+  } else if (visible) {
+    setStatus('Блок появится после сохранения и пересборки превью', 'neutral');
+  }
 }
 
 function renderBlockList() {
   els.blockList.innerHTML = '';
+
   Object.entries(state.docs.page || {}).forEach(([key, block]) => {
     if (!block || typeof block !== 'object' || typeof block.visible !== 'boolean') return;
+
     const row = document.createElement('div');
     row.className = 'block-row';
     row.innerHTML = `
       <div><strong></strong><small>${key}</small></div>
       <label class="switch"><input type="checkbox"><span></span></label>
     `;
+
     row.querySelector('strong').textContent = blockLabel(key, block);
     const checkbox = row.querySelector('input');
     checkbox.checked = block.visible;
+
     checkbox.addEventListener('change', () => {
       block.visible = checkbox.checked;
       markDirty('page');
       applyBlockVisibility(key, checkbox.checked);
-      if (state.selectedBlockKey === key) els.blockVisible.checked = checkbox.checked;
+      if (state.selectedBlockKey === key) {
+        els.blockVisible.checked = checkbox.checked;
+      }
     });
+
     els.blockList.append(row);
   });
 
@@ -478,43 +673,88 @@ function revokeObjectUrls() {
   state.objectUrls.clear();
 }
 
-async function loadPage(stem) {
-  const page = state.manifest.pages.find(item => item.stem === stem) || state.manifest.pages[0];
-  state.page = page;
+async function loadPage(stem, options = {}) {
+  const { force = false, hash = '' } = options;
+  const page = pageFromStem(stem);
+
+  if (!page) {
+    setStatus(`Страница «${stem}» не найдена в CMS`, 'error');
+    if (state.page) els.pageSelect.value = state.page.stem;
+    return false;
+  }
+
+  const switchingPage = state.page && state.page.stem !== page.stem;
+  if (!force && switchingPage && hasUnsavedChanges()) {
+    const discard = window.confirm('Есть несохранённые изменения. Сбросить их и перейти на другую страницу?');
+    if (!discard) {
+      els.pageSelect.value = state.page.stem;
+      return false;
+    }
+  }
+
   revokeObjectUrls();
 
-  const [pageData, siteData] = await Promise.all([
-    fetch(page.data_url, { cache: 'no-store' }).then(response => response.json()),
-    fetch(state.manifest.site_data_url, { cache: 'no-store' }).then(response => response.json()),
-  ]);
+  let pageData;
+  let siteData;
+  try {
+    [pageData, siteData] = await Promise.all([
+      fetch(page.data_url, { cache: 'no-store' }).then(response => {
+        if (!response.ok) throw new Error(`${page.data_url}: HTTP ${response.status}`);
+        return response.json();
+      }),
+      fetch(state.manifest.site_data_url, { cache: 'no-store' }).then(response => {
+        if (!response.ok) throw new Error(`${state.manifest.site_data_url}: HTTP ${response.status}`);
+        return response.json();
+      }),
+    ]);
+  } catch (error) {
+    setStatus(`Не удалось загрузить страницу: ${error.message}`, 'error');
+    if (state.page) els.pageSelect.value = state.page.stem;
+    return false;
+  }
 
+  state.page = page;
   state.docs.page = pageData;
   state.docs.site = siteData;
   state.original.page = clone(pageData);
   state.original.site = clone(siteData);
   state.pendingUploads.clear();
   state.blockElements.clear();
+  state.pendingPreviewHash = hash;
+
   rebuildFields();
   clearDirty();
   syncSeoFields();
   renderBlockList();
   clearSelection();
+
+  els.pageSelect.value = page.stem;
+  syncAdminUrl(page.stem);
   els.iframe.src = `../${page.output}?cms-preview=1&_=${Date.now()}`;
+  return true;
 }
 
 function requestPassword() {
   return new Promise(resolve => {
     const saved = sessionStorage.getItem('plazmaCmsPassword');
-    if (saved) return resolve(saved);
+    if (saved) {
+      resolve(saved);
+      return;
+    }
+
     els.password.value = '';
     els.passwordDialog.showModal();
+
     const close = () => {
       els.passwordDialog.removeEventListener('close', close);
       if (els.passwordDialog.returnValue === 'default' && els.password.value) {
         sessionStorage.setItem('plazmaCmsPassword', els.password.value);
         resolve(els.password.value);
-      } else resolve(null);
+      } else {
+        resolve(null);
+      }
     };
+
     els.passwordDialog.addEventListener('close', close);
   });
 }
@@ -522,17 +762,23 @@ function requestPassword() {
 function uint8ToBase64(bytes) {
   let binary = '';
   const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + chunk, bytes.length)));
+  for (let index = 0; index < bytes.length; index += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(index, Math.min(index + chunk, bytes.length)));
   }
   return btoa(binary);
 }
 
 async function prepareImageUpload(file) {
-  if (!IMAGE_TYPES.has(file.type)) throw new Error('Поддерживаются JPG, PNG, WEBP и GIF.');
-  if (file.size > MAX_IMAGE_BYTES) throw new Error('Файл больше 4 МБ. Сначала уменьшите изображение.');
+  if (!IMAGE_TYPES.has(file.type)) {
+    throw new Error('Поддерживаются JPG, PNG, WEBP и GIF.');
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error('Файл больше 4 МБ. Сначала уменьшите изображение.');
+  }
 
-  const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  const extension = (file.name.split('.').pop() || 'jpg')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') || 'jpg';
   const token = Math.random().toString(36).slice(2, 8);
   const fileName = `cms-${Date.now()}-${token}.${extension}`;
   const publicPath = `assets/images/uploads/${fileName}`;
@@ -541,15 +787,18 @@ async function prepareImageUpload(file) {
   const content = uint8ToBase64(bytes);
   const previewUrl = URL.createObjectURL(file);
   state.objectUrls.add(previewUrl);
+
   return { publicPath, repositoryPath, content, previewUrl, size: file.size };
 }
 
 async function saveChanges() {
-  if (!state.dirtyScopes.size && !state.pendingUploads.size) return;
+  if (!hasUnsavedChanges()) return;
+
   const password = await requestPassword();
   if (!password) return;
 
   const changes = [];
+
   if (state.dirtyScopes.has('page')) {
     changes.push({
       path: state.page.source_path,
@@ -557,6 +806,7 @@ async function saveChanges() {
       content: `${JSON.stringify(state.docs.page, null, 2)}\n`,
     });
   }
+
   if (state.dirtyScopes.has('site')) {
     changes.push({
       path: state.manifest.site_source_path,
@@ -564,13 +814,17 @@ async function saveChanges() {
       content: `${JSON.stringify(state.docs.site, null, 2)}\n`,
     });
   }
+
   state.pendingUploads.forEach(upload => {
-    changes.push({ path: upload.repositoryPath, encoding: 'base64', content: upload.content });
+    changes.push({
+      path: upload.repositoryPath,
+      encoding: 'base64',
+      content: upload.content,
+    });
   });
 
   els.save.disabled = true;
-  els.status.textContent = 'Сохраняю…';
-  els.status.style.color = '#667085';
+  setStatus('Сохраняю…', 'neutral');
 
   try {
     const response = await fetch('/.netlify/functions/cms-save', {
@@ -583,18 +837,21 @@ async function saveChanges() {
         message: `CMS: ${state.page.label}`,
       }),
     });
+
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+    if (!response.ok) {
+      throw new Error(result.error || `HTTP ${response.status}`);
+    }
 
     state.original.page = clone(state.docs.page);
     state.original.site = clone(state.docs.site);
     clearDirty();
-    els.status.textContent = `Сохранено · ${String(result.commit || '').slice(0, 7)} · Netlify пересобирает ветку`;
-    els.status.style.color = '#18794e';
+    setStatus(`Сохранено · ${String(result.commit || '').slice(0, 7)} · Netlify пересобирает ветку`, 'success');
   } catch (error) {
-    if (/password|парол|401/i.test(error.message)) sessionStorage.removeItem('plazmaCmsPassword');
-    els.status.textContent = `Не сохранено: ${error.message}`;
-    els.status.style.color = '#b42318';
+    if (/password|парол|401/i.test(error.message)) {
+      sessionStorage.removeItem('plazmaCmsPassword');
+    }
+    setStatus(`Не сохранено: ${error.message}`, 'error');
     els.save.disabled = false;
   }
 }
@@ -602,6 +859,7 @@ async function saveChanges() {
 function updateSelectedFieldValue(value, previewValue = value) {
   const field = state.selectedField;
   if (!field) return;
+
   const doc = docForScope(field.scope);
   const oldValue = field.value;
   setPath(doc, field.path, value);
@@ -613,6 +871,7 @@ function updateSelectedFieldValue(value, previewValue = value) {
 
 function moveDomItem(element, direction) {
   if (!element?.parentElement) return;
+
   if (direction < 0) {
     const previous = element.previousElementSibling;
     if (previous) element.parentElement.insertBefore(element, previous);
@@ -625,6 +884,7 @@ function moveDomItem(element, direction) {
 function handleItemAction(action) {
   const context = state.selectedItem;
   if (!context) return;
+
   const doc = docForScope(context.scope);
   const array = getPath(doc, context.arrayPath);
   if (!Array.isArray(array)) return;
@@ -634,7 +894,8 @@ function handleItemAction(action) {
     moveDomItem(context.element, -1);
     markDirty(context.scope);
     rebuildFields();
-    return clearSelection('Элемент перемещён выше');
+    clearSelection('Элемент перемещён выше');
+    return;
   }
 
   if (action === 'down' && context.index < array.length - 1) {
@@ -642,19 +903,23 @@ function handleItemAction(action) {
     moveDomItem(context.element, 1);
     markDirty(context.scope);
     rebuildFields();
-    return clearSelection('Элемент перемещён ниже');
+    clearSelection('Элемент перемещён ниже');
+    return;
   }
 
   if (action === 'duplicate') {
     const copy = clone(array[context.index]);
     array.splice(context.index + 1, 0, copy);
+
     if (context.element?.parentElement) {
       const cloneNode = context.element.cloneNode(true);
       context.element.insertAdjacentElement('afterend', cloneNode);
     }
+
     markDirty(context.scope);
     rebuildFields();
-    return clearSelection('Добавлена копия — нажмите на её текст и измените содержимое');
+    clearSelection('Добавлена копия — нажмите на её текст и измените содержимое');
+    return;
   }
 
   if (action === 'delete') {
@@ -663,7 +928,7 @@ function handleItemAction(action) {
     context.element?.remove();
     markDirty(context.scope);
     rebuildFields();
-    return clearSelection('Элемент удалён');
+    clearSelection('Элемент удалён');
   }
 }
 
@@ -671,14 +936,17 @@ async function handleImageFile() {
   const file = els.imageFile.files?.[0];
   const field = state.selectedField;
   if (!file || !field) return;
+
   try {
     const upload = await prepareImageUpload(file);
     const key = fieldKey(field);
     const previous = state.pendingUploads.get(key);
+
     if (previous?.previewUrl) {
       URL.revokeObjectURL(previous.previewUrl);
       state.objectUrls.delete(previous.previewUrl);
     }
+
     state.pendingUploads.set(key, upload);
     updateSelectedFieldValue(upload.publicPath, upload.previewUrl);
     els.text.value = upload.publicPath;
@@ -692,7 +960,12 @@ async function handleImageFile() {
 }
 
 async function init() {
-  state.manifest = await fetch('data/manifest.json', { cache: 'no-store' }).then(response => response.json());
+  const manifestResponse = await fetch('data/manifest.json', { cache: 'no-store' });
+  if (!manifestResponse.ok) {
+    throw new Error(`manifest.json: HTTP ${manifestResponse.status}`);
+  }
+
+  state.manifest = await manifestResponse.json();
   els.branch.textContent = state.manifest.branch;
 
   state.manifest.pages.forEach(page => {
@@ -703,11 +976,11 @@ async function init() {
   });
 
   els.pageSelect.addEventListener('change', async () => {
-    if ((state.dirtyScopes.size || state.pendingUploads.size) && !window.confirm('Сбросить несохранённые изменения и открыть другую страницу?')) {
+    const requestedStem = els.pageSelect.value;
+    const opened = await loadPage(requestedStem);
+    if (!opened && state.page) {
       els.pageSelect.value = state.page.stem;
-      return;
     }
-    await loadPage(els.pageSelect.value);
   });
 
   els.iframe.addEventListener('load', attachPreviewEditing);
@@ -715,7 +988,9 @@ async function init() {
   els.text.addEventListener('input', () => {
     if (!state.selectedField) return;
     updateSelectedFieldValue(els.text.value);
-    if (!els.imageTools.hidden) els.imagePreview.src = els.text.value;
+    if (!els.imageTools.hidden) {
+      els.imagePreview.src = els.text.value;
+    }
   });
 
   els.imageFile.addEventListener('change', handleImageFile);
@@ -723,6 +998,7 @@ async function init() {
   els.blockVisible.addEventListener('change', () => {
     const key = state.selectedBlockKey;
     if (!key) return;
+
     state.docs.page[key].visible = els.blockVisible.checked;
     markDirty('page');
     applyBlockVisibility(key, els.blockVisible.checked);
@@ -752,19 +1028,28 @@ async function init() {
   });
 
   els.reload.addEventListener('click', async () => {
-    if ((state.dirtyScopes.size || state.pendingUploads.size) && !window.confirm('Сбросить все несохранённые изменения?')) return;
-    await loadPage(state.page.stem);
+    if (hasUnsavedChanges()) {
+      const discard = window.confirm('Сбросить все несохранённые изменения?');
+      if (!discard) return;
+    }
+    await loadPage(state.page.stem, { force: true });
   });
 
   els.save.addEventListener('click', saveChanges);
 
   window.addEventListener('beforeunload', event => {
-    if (!state.dirtyScopes.size && !state.pendingUploads.size) return;
+    if (!hasUnsavedChanges()) return;
     event.preventDefault();
     event.returnValue = '';
   });
 
-  await loadPage(state.manifest.pages[0].stem);
+  const requestedStem = new URLSearchParams(location.search).get('page');
+  const initialPage = pageFromStem(requestedStem) || state.manifest.pages[0];
+  if (!initialPage) {
+    throw new Error('В manifest.json нет страниц для редактирования.');
+  }
+
+  await loadPage(initialPage.stem, { force: true });
 }
 
 init().catch(error => {
