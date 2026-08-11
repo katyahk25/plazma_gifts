@@ -44,37 +44,21 @@ const els = {
 };
 
 const BLOCK_LABELS = {
-  hero: 'Первый экран',
-  directions: 'Направления',
-  catalog: 'Популярные заказы',
-  portfolio: 'Примеры работ',
-  advantages: 'Преимущества',
-  process: 'Этапы заказа',
-  request: 'Форма заявки',
-  faq: 'Частые вопросы',
-  gallery: 'Галерея',
-  summary: 'Краткие карточки',
-  benefits: 'Преимущества',
-  price_includes: 'Что входит в стоимость',
-  constructor: 'Конструктор гравировки',
-  delivery_info: 'Доставка',
-  form: 'Форма',
+  hero: 'Первый экран', directions: 'Направления', catalog: 'Популярные заказы',
+  portfolio: 'Примеры работ', advantages: 'Преимущества', process: 'Этапы заказа',
+  request: 'Форма заявки', faq: 'Частые вопросы', gallery: 'Галерея',
+  summary: 'Краткие карточки', benefits: 'Преимущества',
+  price_includes: 'Что входит в стоимость', constructor: 'Конструктор гравировки',
+  delivery_info: 'Доставка', form: 'Форма',
 };
 
 const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-function normalize(value) {
-  return String(value ?? '').replace(/\s+/g, ' ').trim();
-}
-
-function parsePath(path) {
-  return path.replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean);
-}
+const clone = value => JSON.parse(JSON.stringify(value));
+const normalize = value => String(value ?? '').replace(/\s+/g, ' ').trim();
+const parsePath = path => path.replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean);
+const hasUnsavedChanges = () => state.dirtyScopes.size > 0 || state.pendingUploads.size > 0;
 
 function getPath(root, path) {
   let current = root;
@@ -88,30 +72,22 @@ function getPath(root, path) {
 function setPath(root, path, value) {
   const parts = parsePath(path);
   let current = root;
-  for (let index = 0; index < parts.length - 1; index += 1) {
-    current = current[parts[index]];
-  }
+  for (let i = 0; i < parts.length - 1; i += 1) current = current[parts[i]];
   current[parts.at(-1)] = value;
 }
 
 function flatten(value, path = '', scope = 'page') {
   const result = [];
-
   if (Array.isArray(value)) {
-    value.forEach((item, index) => {
-      result.push(...flatten(item, `${path}[${index}]`, scope));
-    });
+    value.forEach((item, index) => result.push(...flatten(item, `${path}[${index}]`, scope)));
     return result;
   }
-
   if (value && typeof value === 'object') {
     Object.entries(value).forEach(([key, item]) => {
-      const nextPath = path ? `${path}.${key}` : key;
-      result.push(...flatten(item, nextPath, scope));
+      result.push(...flatten(item, path ? `${path}.${key}` : key, scope));
     });
     return result;
   }
-
   result.push({ scope, path, value, normalized: normalize(value) });
   return result;
 }
@@ -123,74 +99,36 @@ function rebuildFields() {
   ];
 }
 
-function docForScope(scope) {
-  return state.docs[scope];
-}
-
-function scopeLabel(scope) {
-  return scope === 'site' ? 'site' : 'page';
-}
-
-function fieldKey(field) {
-  return `${field.scope}:${field.path}`;
-}
-
-function hasUnsavedChanges() {
-  return state.dirtyScopes.size > 0 || state.pendingUploads.size > 0;
-}
+function docForScope(scope) { return state.docs[scope]; }
+function fieldKey(field) { return `${field.scope}:${field.path}`; }
+function scopeLabel(scope) { return scope === 'site' ? 'site' : 'page'; }
 
 function labelFromPath(path) {
   const last = parsePath(path).at(-1) || 'Поле';
   const labels = {
-    heading: 'Заголовок',
-    title: 'Заголовок',
-    lead: 'Описание',
-    text: 'Текст',
-    label: 'Надпись',
-    price: 'Цена',
-    image: 'Изображение',
-    src: 'Изображение',
-    alt: 'ALT-текст',
-    image_alt: 'ALT-текст',
-    kicker: 'Надзаголовок',
-    description: 'Описание',
-    question: 'Вопрос',
-    answer: 'Ответ',
-    url: 'Ссылка',
-    breadcrumb: 'Хлебные крошки',
-    hint: 'Подсказка',
-    note: 'Примечание',
+    heading: 'Заголовок', title: 'Заголовок', lead: 'Описание', text: 'Текст',
+    label: 'Надпись', price: 'Цена', image: 'Изображение', src: 'Изображение',
+    alt: 'ALT-текст', image_alt: 'ALT-текст', kicker: 'Надзаголовок',
+    description: 'Описание', question: 'Вопрос', answer: 'Ответ', url: 'Ссылка',
+    breadcrumb: 'Хлебные крошки', hint: 'Подсказка', note: 'Примечание',
   };
   return labels[last] || last.replaceAll('_', ' ');
 }
 
 function blockLabel(key, block) {
-  return BLOCK_LABELS[key]
-    || block?.heading
-    || block?.title
-    || block?.kicker
-    || key.replaceAll('_', ' ');
+  return BLOCK_LABELS[key] || block?.heading || block?.title || block?.kicker || key.replaceAll('_', ' ');
 }
 
 function setStatus(message, type = 'neutral') {
+  const colors = { neutral: '#667085', dirty: '#7d1736', success: '#18794e', error: '#b42318' };
   els.status.textContent = message;
-  const colors = {
-    neutral: '#667085',
-    dirty: '#7d1736',
-    success: '#18794e',
-    error: '#b42318',
-  };
   els.status.style.color = colors[type] || colors.neutral;
 }
 
 function syncDirtyUi(message = null) {
   const dirty = hasUnsavedChanges();
   els.save.disabled = !dirty;
-  if (message) {
-    setStatus(message, dirty ? 'dirty' : 'neutral');
-  } else {
-    setStatus(dirty ? 'Есть несохранённые изменения' : 'Без изменений', dirty ? 'dirty' : 'neutral');
-  }
+  setStatus(message || (dirty ? 'Есть несохранённые изменения' : 'Без изменений'), dirty ? 'dirty' : 'neutral');
 }
 
 function markDirty(scope, message = null) {
@@ -211,20 +149,30 @@ function syncAdminUrl(stem) {
 }
 
 function pageFromStem(stem) {
+  if (!stem) return null;
   return state.manifest?.pages?.find(page => page.stem === stem) || null;
 }
 
+function routeKey(value) {
+  let path = decodeURIComponent(String(value || '')).split('?')[0].split('#')[0];
+  path = path.replace(/^https?:\/\/[^/]+/i, '');
+  path = path.replace(/\/+$/, '');
+  if (!path || path === '/') return 'index';
+  const last = path.split('/').filter(Boolean).at(-1) || 'index';
+  return last.replace(/\.html$/i, '') || 'index';
+}
+
 function pageFromUrl(url) {
-  const segments = url.pathname.split('/').filter(Boolean);
-  const fileName = decodeURIComponent(segments.at(-1) || 'index.html');
-  return state.manifest?.pages?.find(page => page.output === fileName) || null;
+  const key = routeKey(url.pathname);
+  return state.manifest?.pages?.find(page => (
+    page.stem === key || routeKey(page.output) === key
+  )) || null;
 }
 
 function scrollPreviewToHash(hash) {
   if (!hash) return;
   const doc = els.iframe.contentDocument;
   if (!doc) return;
-
   try {
     doc.querySelector(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch {
@@ -242,8 +190,8 @@ function ownText(element) {
 
 function relativeImagePath(element) {
   try {
-    const url = new URL(element.currentSrc || element.src, location.href);
-    return url.pathname.replace(/^\//, '');
+    return new URL(element.currentSrc || element.src, els.iframe.contentWindow.location.href)
+      .pathname.replace(/^\//, '');
   } catch {
     return '';
   }
@@ -257,32 +205,23 @@ function isImageField(field) {
 
 function candidatesForElement(element) {
   if (!element) return [];
-
   if (element.tagName === 'IMG') {
     const image = relativeImagePath(element);
-    return state.fields.filter(field => (
-      typeof field.value === 'string'
-      && normalize(field.value).replace(/^\//, '') === image
-    ));
+    return state.fields.filter(field => typeof field.value === 'string'
+      && normalize(field.value).replace(/^\//, '') === image);
   }
 
   const text = ownText(element);
   if (!text) return [];
-
   const visibleFields = state.fields.filter(field => {
     if (typeof field.value !== 'string' || !field.normalized) return false;
     const last = parsePath(field.path).at(-1);
-    return ![
-      'url', 'src', 'image', 'image_alt', 'alt',
-      'class_name', 'card_class', 'active_class',
-    ].includes(last);
+    return !['url', 'src', 'image', 'image_alt', 'alt', 'class_name', 'card_class', 'active_class'].includes(last);
   });
 
   let matches = visibleFields.filter(field => field.normalized === text);
   if (!matches.length && text.length > 3) {
-    matches = visibleFields.filter(field => (
-      field.normalized.length > 2 && text.includes(field.normalized)
-    ));
+    matches = visibleFields.filter(field => field.normalized.length > 2 && text.includes(field.normalized));
   }
   return matches;
 }
@@ -299,8 +238,9 @@ function findDescendantCandidates(element) {
 function clearPreviewSelection() {
   const doc = els.iframe.contentDocument;
   if (!doc) return;
-  doc.querySelectorAll('.cms-hover').forEach(node => node.classList.remove('cms-hover'));
-  doc.querySelectorAll('.cms-selected').forEach(node => node.classList.remove('cms-selected'));
+  doc.querySelectorAll('.cms-hover,.cms-selected').forEach(node => {
+    node.classList.remove('cms-hover', 'cms-selected');
+  });
 }
 
 function topBlockKey(field) {
@@ -314,23 +254,15 @@ function itemContextForField(field, element) {
   if (!field) return null;
   const match = field.path.match(/^(.*)\[(\d+)\](?:\..*)?$/);
   if (!match) return null;
-
   const arrayPath = match[1];
   const index = Number(match[2]);
   const array = getPath(docForScope(field.scope), arrayPath);
-
-  if (!Array.isArray(array) || !Number.isInteger(index) || index < 0 || index >= array.length) {
-    return null;
-  }
+  if (!Array.isArray(array) || index < 0 || index >= array.length) return null;
 
   let itemElement = element;
-  if (arrayPath.endsWith('.tags')) {
-    itemElement = element?.closest?.('.tags > span') || element;
-  } else if (arrayPath.endsWith('.images')) {
-    itemElement = element?.closest?.('button') || element?.closest?.('img') || element;
-  } else if (field.scope === 'page') {
-    itemElement = element?.closest?.('article,li,details') || element;
-  }
+  if (arrayPath.endsWith('.tags')) itemElement = element?.closest?.('.tags > span') || element;
+  else if (arrayPath.endsWith('.images')) itemElement = element?.closest?.('button') || element?.closest?.('img') || element;
+  else if (field.scope === 'page') itemElement = element?.closest?.('article,li,details') || element;
 
   return { scope: field.scope, arrayPath, index, array, element: itemElement };
 }
@@ -338,12 +270,10 @@ function itemContextForField(field, element) {
 function updateBlockControl() {
   const key = topBlockKey(state.selectedField);
   state.selectedBlockKey = key;
-
   if (!key) {
     els.blockControl.hidden = true;
     return;
   }
-
   const block = state.docs.page[key];
   els.blockControl.hidden = false;
   els.blockControlTitle.textContent = blockLabel(key, block);
@@ -354,16 +284,10 @@ function updateItemActions() {
   state.selectedItem = itemContextForField(state.selectedField, state.selectedElement);
   els.itemActions.hidden = !state.selectedItem;
   if (!state.selectedItem) return;
-
   els.itemActions.querySelectorAll('[data-item-action]').forEach(button => {
     const action = button.dataset.itemAction;
-    if (action === 'up') {
-      button.disabled = state.selectedItem.index === 0;
-    } else if (action === 'down') {
-      button.disabled = state.selectedItem.index === state.selectedItem.array.length - 1;
-    } else {
-      button.disabled = false;
-    }
+    button.disabled = (action === 'up' && state.selectedItem.index === 0)
+      || (action === 'down' && state.selectedItem.index === state.selectedItem.array.length - 1);
   });
 }
 
@@ -380,15 +304,13 @@ function selectField(field, element) {
 
   const image = isImageField(field) || element?.tagName === 'IMG';
   els.imageTools.hidden = !image;
-
   if (image) {
     const pending = state.pendingUploads.get(fieldKey(field));
     els.imagePreview.src = pending?.previewUrl || element?.currentSrc || element?.src || field.value || '';
-    els.note.textContent = 'Выберите новый файл или измените путь вручную. Изображение сохранится в GitHub вместе с остальными изменениями.';
+    els.note.textContent = 'Выберите новый файл или измените путь вручную. Изображение сохранится вместе с остальными изменениями.';
   } else {
     els.note.textContent = 'Изменение сразу показывается в предпросмотре и записывается после «Сохранить».';
   }
-
   updateBlockControl();
   updateItemActions();
   clearPreviewSelection();
@@ -405,7 +327,6 @@ function showCandidates(candidates, element) {
   els.blockControl.hidden = true;
   els.itemActions.hidden = true;
   els.candidates.innerHTML = '';
-
   candidates.forEach(field => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -413,7 +334,6 @@ function showCandidates(candidates, element) {
     button.addEventListener('click', () => selectField(field, element));
     els.candidates.append(button);
   });
-
   els.candidates.hidden = false;
 }
 
@@ -425,16 +345,12 @@ function clearSelection(message = null) {
   state.selectedBlockKey = null;
   els.content.hidden = true;
   els.empty.hidden = false;
-
-  if (message) {
-    els.empty.innerHTML = `<strong>${message}</strong><p>Выберите следующий элемент на странице.</p>`;
-  }
+  if (message) els.empty.innerHTML = `<strong>${message}</strong><p>Выберите следующий элемент на странице.</p>`;
 }
 
 async function followPreviewLink(anchor) {
   const rawHref = anchor.getAttribute('href') || '';
   if (!rawHref || rawHref === '#') return;
-
   if (rawHref.startsWith('#')) {
     scrollPreviewToHash(rawHref);
     return;
@@ -448,12 +364,7 @@ async function followPreviewLink(anchor) {
     return;
   }
 
-  if (!['http:', 'https:'].includes(url.protocol)) {
-    window.open(url.href, '_blank', 'noopener');
-    return;
-  }
-
-  if (url.origin !== location.origin) {
+  if (!['http:', 'https:'].includes(url.protocol) || url.origin !== location.origin) {
     window.open(url.href, '_blank', 'noopener');
     return;
   }
@@ -488,41 +399,21 @@ async function handlePreviewClick(event) {
   event.stopPropagation();
 
   let candidates = candidatesForElement(target);
-  if (candidates.length === 1) {
-    selectField(candidates[0], target);
-    return;
-  }
-  if (candidates.length > 1) {
-    showCandidates(candidates, target);
-    return;
-  }
+  if (candidates.length === 1) return selectField(candidates[0], target);
+  if (candidates.length > 1) return showCandidates(candidates, target);
 
   const descendant = findDescendantCandidates(target);
   if (descendant) {
-    if (descendant.candidates.length === 1) {
-      selectField(descendant.candidates[0], descendant.element);
-    } else {
-      showCandidates(descendant.candidates, descendant.element);
-    }
+    if (descendant.candidates.length === 1) selectField(descendant.candidates[0], descendant.element);
+    else showCandidates(descendant.candidates, descendant.element);
     return;
   }
 
-  for (
-    let parent = target.parentElement;
-    parent && parent !== target.ownerDocument.body;
-    parent = parent.parentElement
-  ) {
+  for (let parent = target.parentElement; parent && parent !== target.ownerDocument.body; parent = parent.parentElement) {
     candidates = candidatesForElement(parent);
-    if (candidates.length === 1) {
-      selectField(candidates[0], target);
-      return;
-    }
-    if (candidates.length > 1) {
-      showCandidates(candidates, target);
-      return;
-    }
+    if (candidates.length === 1) return selectField(candidates[0], target);
+    if (candidates.length > 1) return showCandidates(candidates, target);
   }
-
   clearSelection('У этого элемента пока нет отдельного поля');
 }
 
@@ -540,32 +431,21 @@ function injectPreviewStyles(doc) {
 function attachPreviewEditing() {
   const doc = els.iframe.contentDocument;
   if (!doc) return;
-
   state.blockElements.clear();
   injectPreviewStyles(doc);
   doc.documentElement.style.scrollBehavior = 'auto';
   doc.addEventListener('click', handlePreviewClick, true);
-
   doc.addEventListener('mouseover', event => {
     const target = event.target;
     if (!(target instanceof els.iframe.contentWindow.HTMLElement)) return;
-
-    const anchor = target.closest?.('a[href]');
-    if (anchor || candidatesForElement(target).length || findDescendantCandidates(target)) {
+    if (target.closest?.('a[href]') || candidatesForElement(target).length || findDescendantCandidates(target)) {
       target.classList.add('cms-hover');
     }
   }, true);
-
-  doc.addEventListener('mouseout', event => {
-    event.target?.classList?.remove('cms-hover');
-  }, true);
-
+  doc.addEventListener('mouseout', event => event.target?.classList?.remove('cms-hover'), true);
   doc.querySelectorAll('a[href]').forEach(link => {
-    link.title = link.title
-      ? `${link.title} · Alt+клик — редактировать текст`
-      : 'Клик — перейти · Alt+клик — редактировать текст ссылки';
+    link.title = link.title ? `${link.title} · Alt+клик — редактировать текст` : 'Клик — перейти · Alt+клик — редактировать текст ссылки';
   });
-
   if (state.pendingPreviewHash) {
     const hash = state.pendingPreviewHash;
     state.pendingPreviewHash = '';
@@ -576,37 +456,25 @@ function attachPreviewEditing() {
 function updateLivePreview(value, oldValue) {
   const element = state.selectedElement;
   if (!element) return;
-
   if (element.tagName === 'IMG') {
     element.src = value;
     return;
   }
-
   const directNodes = [...element.childNodes].filter(node => node.nodeType === 3);
   const matchingNode = directNodes.find(node => normalize(node.textContent) === normalize(oldValue));
-
-  if (matchingNode) {
-    matchingNode.textContent = value;
-    return;
-  }
-
-  if (element.children.length === 0) {
-    element.textContent = value;
-  }
+  if (matchingNode) matchingNode.textContent = value;
+  else if (element.children.length === 0) element.textContent = value;
 }
 
 function findBlockElement(key) {
   const cached = state.blockElements.get(key);
   if (cached?.isConnected) return cached;
-
   const doc = els.iframe.contentDocument;
   const block = state.docs.page?.[key];
   if (!doc || !block) return null;
-
   const blockFields = flatten(block, key, 'page')
     .filter(field => typeof field.value === 'string' && field.normalized.length > 2)
-    .sort((left, right) => right.normalized.length - left.normalized.length);
-
+    .sort((a, b) => b.normalized.length - a.normalized.length);
   const nodes = [...doc.querySelectorAll('h1,h2,h3,h4,p,span,strong,a')];
   for (const field of blockFields) {
     const node = nodes.find(candidate => normalize(candidate.textContent) === field.normalized);
@@ -616,48 +484,33 @@ function findBlockElement(key) {
       return section;
     }
   }
-
   return null;
 }
 
 function applyBlockVisibility(key, visible) {
   const section = findBlockElement(key);
-  if (section) {
-    section.dataset.cmsHiddenPreview = visible ? 'false' : 'true';
-  } else if (visible) {
-    setStatus('Блок появится после сохранения и пересборки превью', 'neutral');
-  }
+  if (section) section.dataset.cmsHiddenPreview = visible ? 'false' : 'true';
+  else if (visible) setStatus('Блок появится после сохранения и пересборки превью', 'neutral');
 }
 
 function renderBlockList() {
   els.blockList.innerHTML = '';
-
   Object.entries(state.docs.page || {}).forEach(([key, block]) => {
     if (!block || typeof block !== 'object' || typeof block.visible !== 'boolean') return;
-
     const row = document.createElement('div');
     row.className = 'block-row';
-    row.innerHTML = `
-      <div><strong></strong><small>${key}</small></div>
-      <label class="switch"><input type="checkbox"><span></span></label>
-    `;
-
+    row.innerHTML = `<div><strong></strong><small>${key}</small></div><label class="switch"><input type="checkbox"><span></span></label>`;
     row.querySelector('strong').textContent = blockLabel(key, block);
     const checkbox = row.querySelector('input');
     checkbox.checked = block.visible;
-
     checkbox.addEventListener('change', () => {
       block.visible = checkbox.checked;
       markDirty('page');
       applyBlockVisibility(key, checkbox.checked);
-      if (state.selectedBlockKey === key) {
-        els.blockVisible.checked = checkbox.checked;
-      }
+      if (state.selectedBlockKey === key) els.blockVisible.checked = checkbox.checked;
     });
-
     els.blockList.append(row);
   });
-
   if (!els.blockList.children.length) {
     els.blockList.innerHTML = '<div style="padding:0 8px 10px;color:#8a94a3;font-size:11px">На этой странице нет переключаемых блоков.</div>';
   }
@@ -676,15 +529,14 @@ function revokeObjectUrls() {
 async function loadPage(stem, options = {}) {
   const { force = false, hash = '' } = options;
   const page = pageFromStem(stem);
-
   if (!page) {
     setStatus(`Страница «${stem}» не найдена в CMS`, 'error');
     if (state.page) els.pageSelect.value = state.page.stem;
     return false;
   }
 
-  const switchingPage = state.page && state.page.stem !== page.stem;
-  if (!force && switchingPage && hasUnsavedChanges()) {
+  const switching = state.page && state.page.stem !== page.stem;
+  if (!force && switching && hasUnsavedChanges()) {
     const discard = window.confirm('Есть несохранённые изменения. Сбросить их и перейти на другую страницу?');
     if (!discard) {
       els.pageSelect.value = state.page.stem;
@@ -693,11 +545,8 @@ async function loadPage(stem, options = {}) {
   }
 
   revokeObjectUrls();
-
-  let pageData;
-  let siteData;
   try {
-    [pageData, siteData] = await Promise.all([
+    const [pageData, siteData] = await Promise.all([
       fetch(page.data_url, { cache: 'no-store' }).then(response => {
         if (!response.ok) throw new Error(`${page.data_url}: HTTP ${response.status}`);
         return response.json();
@@ -707,27 +556,25 @@ async function loadPage(stem, options = {}) {
         return response.json();
       }),
     ]);
+    state.page = page;
+    state.docs.page = pageData;
+    state.docs.site = siteData;
+    state.original.page = clone(pageData);
+    state.original.site = clone(siteData);
   } catch (error) {
     setStatus(`Не удалось загрузить страницу: ${error.message}`, 'error');
     if (state.page) els.pageSelect.value = state.page.stem;
     return false;
   }
 
-  state.page = page;
-  state.docs.page = pageData;
-  state.docs.site = siteData;
-  state.original.page = clone(pageData);
-  state.original.site = clone(siteData);
   state.pendingUploads.clear();
   state.blockElements.clear();
   state.pendingPreviewHash = hash;
-
   rebuildFields();
   clearDirty();
   syncSeoFields();
   renderBlockList();
   clearSelection();
-
   els.pageSelect.value = page.stem;
   syncAdminUrl(page.stem);
   els.iframe.src = `../${page.output}?cms-preview=1&_=${Date.now()}`;
@@ -737,24 +584,16 @@ async function loadPage(stem, options = {}) {
 function requestPassword() {
   return new Promise(resolve => {
     const saved = sessionStorage.getItem('plazmaCmsPassword');
-    if (saved) {
-      resolve(saved);
-      return;
-    }
-
+    if (saved) return resolve(saved);
     els.password.value = '';
     els.passwordDialog.showModal();
-
     const close = () => {
       els.passwordDialog.removeEventListener('close', close);
       if (els.passwordDialog.returnValue === 'default' && els.password.value) {
         sessionStorage.setItem('plazmaCmsPassword', els.password.value);
         resolve(els.password.value);
-      } else {
-        resolve(null);
-      }
+      } else resolve(null);
     };
-
     els.passwordDialog.addEventListener('close', close);
   });
 }
@@ -762,23 +601,16 @@ function requestPassword() {
 function uint8ToBase64(bytes) {
   let binary = '';
   const chunk = 0x8000;
-  for (let index = 0; index < bytes.length; index += chunk) {
-    binary += String.fromCharCode(...bytes.subarray(index, Math.min(index + chunk, bytes.length)));
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + chunk, bytes.length)));
   }
   return btoa(binary);
 }
 
 async function prepareImageUpload(file) {
-  if (!IMAGE_TYPES.has(file.type)) {
-    throw new Error('Поддерживаются JPG, PNG, WEBP и GIF.');
-  }
-  if (file.size > MAX_IMAGE_BYTES) {
-    throw new Error('Файл больше 4 МБ. Сначала уменьшите изображение.');
-  }
-
-  const extension = (file.name.split('.').pop() || 'jpg')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '') || 'jpg';
+  if (!IMAGE_TYPES.has(file.type)) throw new Error('Поддерживаются JPG, PNG, WEBP и GIF.');
+  if (file.size > MAX_IMAGE_BYTES) throw new Error('Файл больше 4 МБ. Сначала уменьшите изображение.');
+  const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
   const token = Math.random().toString(36).slice(2, 8);
   const fileName = `cms-${Date.now()}-${token}.${extension}`;
   const publicPath = `assets/images/uploads/${fileName}`;
@@ -787,70 +619,37 @@ async function prepareImageUpload(file) {
   const content = uint8ToBase64(bytes);
   const previewUrl = URL.createObjectURL(file);
   state.objectUrls.add(previewUrl);
-
   return { publicPath, repositoryPath, content, previewUrl, size: file.size };
 }
 
 async function saveChanges() {
   if (!hasUnsavedChanges()) return;
-
   const password = await requestPassword();
   if (!password) return;
-
   const changes = [];
-
   if (state.dirtyScopes.has('page')) {
-    changes.push({
-      path: state.page.source_path,
-      encoding: 'utf-8',
-      content: `${JSON.stringify(state.docs.page, null, 2)}\n`,
-    });
+    changes.push({ path: state.page.source_path, encoding: 'utf-8', content: `${JSON.stringify(state.docs.page, null, 2)}\n` });
   }
-
   if (state.dirtyScopes.has('site')) {
-    changes.push({
-      path: state.manifest.site_source_path,
-      encoding: 'utf-8',
-      content: `${JSON.stringify(state.docs.site, null, 2)}\n`,
-    });
+    changes.push({ path: state.manifest.site_source_path, encoding: 'utf-8', content: `${JSON.stringify(state.docs.site, null, 2)}\n` });
   }
-
-  state.pendingUploads.forEach(upload => {
-    changes.push({
-      path: upload.repositoryPath,
-      encoding: 'base64',
-      content: upload.content,
-    });
-  });
+  state.pendingUploads.forEach(upload => changes.push({ path: upload.repositoryPath, encoding: 'base64', content: upload.content }));
 
   els.save.disabled = true;
   setStatus('Сохраняю…', 'neutral');
-
   try {
     const response = await fetch('/.netlify/functions/cms-save', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        password,
-        branch: state.manifest.branch,
-        changes,
-        message: `CMS: ${state.page.label}`,
-      }),
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ password, branch: state.manifest.branch, changes, message: `CMS: ${state.page.label}` }),
     });
-
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(result.error || `HTTP ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
     state.original.page = clone(state.docs.page);
     state.original.site = clone(state.docs.site);
     clearDirty();
     setStatus(`Сохранено · ${String(result.commit || '').slice(0, 7)} · Netlify пересобирает ветку`, 'success');
   } catch (error) {
-    if (/password|парол|401/i.test(error.message)) {
-      sessionStorage.removeItem('plazmaCmsPassword');
-    }
+    if (/password|парол|401/i.test(error.message)) sessionStorage.removeItem('plazmaCmsPassword');
     setStatus(`Не сохранено: ${error.message}`, 'error');
     els.save.disabled = false;
   }
@@ -859,10 +658,8 @@ async function saveChanges() {
 function updateSelectedFieldValue(value, previewValue = value) {
   const field = state.selectedField;
   if (!field) return;
-
-  const doc = docForScope(field.scope);
   const oldValue = field.value;
-  setPath(doc, field.path, value);
+  setPath(docForScope(field.scope), field.path, value);
   field.value = value;
   field.normalized = normalize(value);
   updateLivePreview(previewValue, oldValue);
@@ -871,7 +668,6 @@ function updateSelectedFieldValue(value, previewValue = value) {
 
 function moveDomItem(element, direction) {
   if (!element?.parentElement) return;
-
   if (direction < 0) {
     const previous = element.previousElementSibling;
     if (previous) element.parentElement.insertBefore(element, previous);
@@ -884,74 +680,46 @@ function moveDomItem(element, direction) {
 function handleItemAction(action) {
   const context = state.selectedItem;
   if (!context) return;
-
-  const doc = docForScope(context.scope);
-  const array = getPath(doc, context.arrayPath);
+  const array = getPath(docForScope(context.scope), context.arrayPath);
   if (!Array.isArray(array)) return;
 
   if (action === 'up' && context.index > 0) {
     [array[context.index - 1], array[context.index]] = [array[context.index], array[context.index - 1]];
     moveDomItem(context.element, -1);
-    markDirty(context.scope);
-    rebuildFields();
-    clearSelection('Элемент перемещён выше');
-    return;
-  }
-
-  if (action === 'down' && context.index < array.length - 1) {
+  } else if (action === 'down' && context.index < array.length - 1) {
     [array[context.index + 1], array[context.index]] = [array[context.index], array[context.index + 1]];
     moveDomItem(context.element, 1);
-    markDirty(context.scope);
-    rebuildFields();
-    clearSelection('Элемент перемещён ниже');
-    return;
-  }
-
-  if (action === 'duplicate') {
-    const copy = clone(array[context.index]);
-    array.splice(context.index + 1, 0, copy);
-
-    if (context.element?.parentElement) {
-      const cloneNode = context.element.cloneNode(true);
-      context.element.insertAdjacentElement('afterend', cloneNode);
-    }
-
-    markDirty(context.scope);
-    rebuildFields();
-    clearSelection('Добавлена копия — нажмите на её текст и измените содержимое');
-    return;
-  }
-
-  if (action === 'delete') {
+  } else if (action === 'duplicate') {
+    array.splice(context.index + 1, 0, clone(array[context.index]));
+    if (context.element?.parentElement) context.element.insertAdjacentElement('afterend', context.element.cloneNode(true));
+  } else if (action === 'delete') {
     if (!window.confirm('Удалить этот элемент из списка?')) return;
     array.splice(context.index, 1);
     context.element?.remove();
-    markDirty(context.scope);
-    rebuildFields();
-    clearSelection('Элемент удалён');
-  }
+  } else return;
+
+  markDirty(context.scope);
+  rebuildFields();
+  clearSelection(action === 'delete' ? 'Элемент удалён' : action === 'duplicate' ? 'Добавлена копия — измените её содержимое' : 'Порядок элементов изменён');
 }
 
 async function handleImageFile() {
   const file = els.imageFile.files?.[0];
   const field = state.selectedField;
   if (!file || !field) return;
-
   try {
     const upload = await prepareImageUpload(file);
     const key = fieldKey(field);
     const previous = state.pendingUploads.get(key);
-
     if (previous?.previewUrl) {
       URL.revokeObjectURL(previous.previewUrl);
       state.objectUrls.delete(previous.previewUrl);
     }
-
     state.pendingUploads.set(key, upload);
     updateSelectedFieldValue(upload.publicPath, upload.previewUrl);
     els.text.value = upload.publicPath;
     els.imagePreview.src = upload.previewUrl;
-    els.note.textContent = 'Новое изображение выбрано. Оно загрузится в GitHub вместе с JSON после нажатия «Сохранить».';
+    els.note.textContent = 'Новое изображение выбрано. Оно загрузится после нажатия «Сохранить».';
   } catch (error) {
     els.note.textContent = error.message;
   } finally {
@@ -961,10 +729,7 @@ async function handleImageFile() {
 
 async function init() {
   const manifestResponse = await fetch('data/manifest.json', { cache: 'no-store' });
-  if (!manifestResponse.ok) {
-    throw new Error(`manifest.json: HTTP ${manifestResponse.status}`);
-  }
-
+  if (!manifestResponse.ok) throw new Error(`manifest.json: HTTP ${manifestResponse.status}`);
   state.manifest = await manifestResponse.json();
   els.branch.textContent = state.manifest.branch;
 
@@ -976,67 +741,47 @@ async function init() {
   });
 
   els.pageSelect.addEventListener('change', async () => {
-    const requestedStem = els.pageSelect.value;
-    const opened = await loadPage(requestedStem);
-    if (!opened && state.page) {
-      els.pageSelect.value = state.page.stem;
-    }
+    const opened = await loadPage(els.pageSelect.value);
+    if (!opened && state.page) els.pageSelect.value = state.page.stem;
   });
-
   els.iframe.addEventListener('load', attachPreviewEditing);
-
   els.text.addEventListener('input', () => {
     if (!state.selectedField) return;
     updateSelectedFieldValue(els.text.value);
-    if (!els.imageTools.hidden) {
-      els.imagePreview.src = els.text.value;
-    }
+    if (!els.imageTools.hidden) els.imagePreview.src = els.text.value;
   });
-
   els.imageFile.addEventListener('change', handleImageFile);
-
   els.blockVisible.addEventListener('change', () => {
     const key = state.selectedBlockKey;
     if (!key) return;
-
     state.docs.page[key].visible = els.blockVisible.checked;
     markDirty('page');
     applyBlockVisibility(key, els.blockVisible.checked);
     renderBlockList();
   });
-
   els.itemActions.addEventListener('click', event => {
     const button = event.target.closest('[data-item-action]');
     if (button) handleItemAction(button.dataset.itemAction);
   });
-
   els.seoTitle.addEventListener('input', () => {
     state.docs.page.seo.title = els.seoTitle.value;
     markDirty('page');
   });
-
   els.seoDescription.addEventListener('input', () => {
     state.docs.page.seo.description = els.seoDescription.value;
     markDirty('page');
   });
-
   document.querySelectorAll('[data-toggle-target]').forEach(button => {
     button.addEventListener('click', () => {
       const target = document.getElementById(button.dataset.toggleTarget);
       target.hidden = !target.hidden;
     });
   });
-
   els.reload.addEventListener('click', async () => {
-    if (hasUnsavedChanges()) {
-      const discard = window.confirm('Сбросить все несохранённые изменения?');
-      if (!discard) return;
-    }
+    if (hasUnsavedChanges() && !window.confirm('Сбросить все несохранённые изменения?')) return;
     await loadPage(state.page.stem, { force: true });
   });
-
   els.save.addEventListener('click', saveChanges);
-
   window.addEventListener('beforeunload', event => {
     if (!hasUnsavedChanges()) return;
     event.preventDefault();
@@ -1045,10 +790,7 @@ async function init() {
 
   const requestedStem = new URLSearchParams(location.search).get('page');
   const initialPage = pageFromStem(requestedStem) || state.manifest.pages[0];
-  if (!initialPage) {
-    throw new Error('В manifest.json нет страниц для редактирования.');
-  }
-
+  if (!initialPage) throw new Error('В manifest.json нет страниц для редактирования.');
   await loadPage(initialPage.stem, { force: true });
 }
 
