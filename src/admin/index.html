@@ -57,9 +57,14 @@
           </label>
 
           <div id="image-tools" class="image-tools" hidden>
-            <img id="image-preview" alt="Предпросмотр выбранного изображения">
-            <label class="upload-button">Заменить изображение<input id="image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>
-            <small>JPG, PNG, WEBP или GIF, до 4 МБ.</small>
+            <div class="image-preview-wrap">
+              <img id="image-preview" alt="Предпросмотр выбранного изображения">
+            </div>
+            <label class="upload-button" for="image-file">
+              <span>Заменить изображение</span>
+              <input id="image-file" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+            </label>
+            <small>JPG, PNG, WEBP или GIF · до 4 МБ</small>
           </div>
 
           <div id="block-control" class="block-control" hidden>
