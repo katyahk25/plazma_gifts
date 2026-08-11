@@ -2,7 +2,6 @@ import crypto from 'node:crypto';
 
 const REPOSITORY = 'katyahk25/plazma_gifts';
 const API_VERSION = '2022-11-28';
-const DEFAULT_CMS_BRANCH = 'feature/cms-admin-v1';
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 const MAX_JSON_BYTES = 2 * 1024 * 1024;
 
@@ -32,6 +31,16 @@ function validUploadPath(path) {
 
 function branchApiPath(branch) {
   return branch.split('/').map(encodeURIComponent).join('/');
+}
+
+function sameOriginRequest(req) {
+  const origin = req.headers.get('origin');
+  if (!origin) return true;
+  try {
+    return new URL(origin).origin === new URL(req.url).origin;
+  } catch {
+    return false;
+  }
 }
 
 async function githubFetch(path, options, headers) {
@@ -85,15 +94,26 @@ function validateChanges(changes) {
 }
 
 export default async (req) => {
-  if (req.method !== 'POST') return json({ error: 'Метод не поддерживается' }, 405);
-
   const githubToken = process.env.PLAZMA_CMS_GITHUB_TOKEN;
   const adminPassword = process.env.PLAZMA_CMS_PASSWORD;
-  const allowedBranch = process.env.PLAZMA_CMS_BRANCH || DEFAULT_CMS_BRANCH;
+  const allowedBranch = process.env.PLAZMA_CMS_BRANCH;
 
-  if (!githubToken || !adminPassword) {
+  if (req.method === 'GET') {
     return json({
-      error: 'Сохранение ещё не подключено: добавьте PLAZMA_CMS_GITHUB_TOKEN и PLAZMA_CMS_PASSWORD в Netlify Environment variables.',
+      ok: true,
+      configured: Boolean(githubToken && adminPassword && allowedBranch),
+      github_token: Boolean(githubToken),
+      password: Boolean(adminPassword),
+      branch: allowedBranch || null,
+    });
+  }
+
+  if (req.method !== 'POST') return json({ error: 'Метод не поддерживается' }, 405);
+  if (!sameOriginRequest(req)) return json({ error: 'Запрос с другого сайта запрещён' }, 403);
+
+  if (!githubToken || !adminPassword || !allowedBranch) {
+    return json({
+      error: 'Сохранение ещё не подключено: добавьте PLAZMA_CMS_GITHUB_TOKEN, PLAZMA_CMS_PASSWORD и PLAZMA_CMS_BRANCH в Netlify Environment variables.',
     }, 503);
   }
 
