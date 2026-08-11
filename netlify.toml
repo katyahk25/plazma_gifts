@@ -1,3 +1,6 @@
 [build]
   command = "python3 build.py"
   publish = "public"
+
+[functions]
+  directory = "netlify/functions"
