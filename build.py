@@ -80,6 +80,8 @@ def render_blocks(template, context):
             rendered_items = []
             for index, item in enumerate(value):
                 child = dict(context)
+                if "@index" in context:
+                    child["@parent_index"] = context["@index"]
                 child["@index"] = index
                 child["item"] = item
                 if isinstance(item, dict):
