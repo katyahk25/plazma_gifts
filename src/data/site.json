@@ -1,0 +1,73 @@
+{
+  "brand": {
+    "name": "ПЛАЗМА"
+  },
+  "category": {
+    "home_label": "Главная",
+    "primary_action_label": "Получить расчёт",
+    "secondary_action_label": "Все направления",
+    "production_label": "Срок изготовления",
+    "production_text": "Уточним после выбора варианта и тиража",
+    "delivery_label": "Доставка по России",
+    "delivery_text": "Отправляем готовые заказы в другие города",
+    "about_overline": "О направлении",
+    "about_secondary_text": "Перед изготовлением уточняем задачу, количество, требования к макету и способ получения заказа.",
+    "offers_title": "Наши предложения",
+    "offers_lead": "Базовые варианты для этого направления. Конкретное исполнение, количество и стоимость подбираем под задачу.",
+    "examples_title": "Примеры работ",
+    "examples_lead": "Показываем общий характер результата. Конкретное оформление каждого заказа согласовываем отдельно.",
+    "request_overline": "Заявка на расчёт",
+    "request_title": "Опишите, что нужно изготовить",
+    "request_text": "Напишите количество, желаемый размер или формат и срок. Если есть исходник, фотография или логотип — приложите его при обращении.",
+    "request_button_label": "Отправить задачу",
+    "request_url": "index.html#request"
+  },
+  "navigation": {
+    "about": {
+      "label": "О нас",
+      "url": "about.html",
+      "data_nav": "about",
+      "aria": "Разделы о нас",
+      "items": [
+        {"label": "Кто мы", "url": "about.html#who-we-are"},
+        {"label": "Наш опыт", "url": "about.html#experience"}
+      ]
+    },
+    "gifts": {
+      "label": "Подарки",
+      "url": "gifts.html",
+      "data_nav": "gifts",
+      "aria": "Категории подарков",
+      "items": [
+        {"label": "Ручки с гравировкой", "url": "pens.html"},
+        {"label": "Ежедневники", "url": "notebooks.html"},
+        {"label": "Кружки", "url": "mugs.html"},
+        {"label": "Текстиль", "url": "textile.html"},
+        {"label": "Холсты", "url": "canvases.html"},
+        {"label": "Экслибрисы", "url": "exlibris.html"},
+        {"label": "Подарочные наборы", "url": "gift-sets.html"}
+      ]
+    },
+    "business": {
+      "label": "Для бизнеса",
+      "url": "business.html",
+      "data_nav": "business",
+      "aria": "Категории для бизнеса",
+      "items": [
+        {"label": "Печати и штампы", "url": "seals-stamps.html"},
+        {"label": "Штампы с логотипом", "url": "logo-stamps.html"},
+        {"label": "Баннеры, визитки, листовки", "url": "print-materials.html"}
+      ]
+    },
+    "standalone": [
+      {"label": "Доставка и оплата", "url": "delivery.html", "data_nav": "delivery"},
+      {"label": "Контакты", "url": "contacts.html", "data_nav": "contacts"}
+    ]
+  },
+  "header": {
+    "brand_url": "index.html",
+    "brand_aria": "ПЛАЗМА — главная",
+    "menu_label": "Открыть меню",
+    "cta": {"label": "Рассчитать заказ", "url": "index.html#request"}
+  }
+}

@@ -1,76 +1,73 @@
 <main>
+{{#if page.hero.visible}}
   <section class="parker-v10-hero">
     <div class="container parker-v10-hero-grid">
       <div class="parker-v10-copy">
-        <h1>Снова ломаете<br>голову над тем,<br>что подарить?</h1>
-        <p class="parker-v10-subtitle">Сделайте подарок, который прослужит долго<br>и точно не забудется</p>
-        <p class="parker-v10-offer">Ручка Parker с индивидуальной гравировкой<br>в фирменной коробке — <strong>3000 ₽</strong></p>
-        <a class="parker-v10-cta" href="#pen-request">Получить макет бесплатно</a>
-        <div class="parker-v10-facts" aria-label="Основная информация">
+        <h1>{{page.hero.headline_line_1}}<br>{{page.hero.headline_line_2}}<br>{{page.hero.headline_line_3}}</h1>
+        <p class="parker-v10-subtitle">{{page.hero.subtitle_line_1}}<br>{{page.hero.subtitle_line_2}}</p>
+        <p class="parker-v10-offer">{{page.hero.offer_line_1}}<br>{{page.hero.offer_line_2}} <strong>{{page.hero.price}}</strong></p>
+        <a class="parker-v10-cta" href="{{page.hero.cta_url}}">{{page.hero.cta_label}}</a>
+        <div class="parker-v10-facts" aria-label="{{page.hero.facts_aria}}">
+{{#each page.hero.facts}}
           <div class="parker-v10-fact">
-            <span class="parker-v10-icon parker-v10-icon-clock" aria-hidden="true"></span>
-            <span>1–2 рабочих дня</span>
+            <span class="parker-v10-icon {{icon_class}}" aria-hidden="true"></span>
+            <span>{{text}}</span>
           </div>
-          <div class="parker-v10-fact">
-            <span class="parker-v10-icon parker-v10-icon-truck" aria-hidden="true"></span>
-            <span>Доставка по России</span>
-          </div>
+{{/each}}
         </div>
       </div>
       <div class="parker-v10-visual">
-        <img src="assets/images/pens/parker-hero-approved-v10.png" alt="Ручка Parker с индивидуальной гравировкой в фирменной коробке">
+        <img src="{{page.hero.image}}" alt="{{page.hero.image_alt}}" data-cms-path="hero.image">
       </div>
     </div>
   </section>
+{{/if}}
 
+{{#if page.summary.visible}}
   <section class="parker-v10-summary">
     <div class="container parker-v10-summary-grid">
+{{#each page.summary.items}}
       <article class="parker-v10-card">
-        <span class="parker-v10-card-icon parker-v10-card-icon-doc" aria-hidden="true"></span>
-        <div><h3>Как это работает</h3><p>Присылаете текст, мы готовим макет<br>и отправляем на согласование.</p><a href="#process">Подробнее →</a></div>
+        <span class="parker-v10-card-icon {{icon_class}}" aria-hidden="true"></span>
+        <div><h3>{{title}}</h3><p>{{text_line_1}}<br>{{text_line_2}}</p><a href="{{url}}">{{link_label}}</a></div>
       </article>
-      <article class="parker-v10-card">
-        <span class="parker-v10-card-icon parker-v10-card-icon-pen" aria-hidden="true"></span>
-        <div><h3>Что входит в стоимость</h3><p>Ручка Parker, индивидуальная гравировка,<br>фирменная коробка.</p><a href="#price-includes">Подробнее →</a></div>
-      </article>
-      <article class="parker-v10-card">
-        <span class="parker-v10-card-icon parker-v10-card-icon-truck" aria-hidden="true"></span>
-        <div><h3>Доставка и сроки</h3><p>Изготавливаем за 1–2 рабочих дня<br>и доставляем по всей России.</p><a href="#delivery-info">Подробнее →</a></div>
-      </article>
+{{/each}}
     </div>
   </section>
+{{/if}}
 
+{{#if page.price_includes.visible}}
   <section class="section section-light" id="price-includes">
     <div class="container">
       <div class="plain-section-head align-center narrow-head">
-        <h2>Что входит в стоимость?</h2>
-        <p>От макета до готового подарка: согласуем оформление, нанесём гравировку и подготовим ручку к вручению.</p>
+        <h2>{{page.price_includes.heading}}</h2>
+        <p>{{page.price_includes.lead}}</p>
       </div>
 
-      <div class="price-includes-map" aria-label="Что входит в стоимость ручки Parker с гравировкой">
+      <div class="price-includes-map" aria-label="{{page.price_includes.aria}}">
         <span class="price-map-line price-map-line-top" aria-hidden="true"></span>
         <span class="price-map-line price-map-line-diagonal" aria-hidden="true"></span>
         <span class="price-map-line price-map-line-bottom" aria-hidden="true"></span>
 
         <article class="price-map-item price-map-mockup">
-          <div class="price-map-visual price-map-mockup-visual" aria-label="Пример макета гравировки">
-            <span class="price-map-script">Иванову И.И.</span>
+          <div class="price-map-visual price-map-mockup-visual" aria-label="{{page.price_includes.mockup.aria}}">
+            <span class="price-map-script">{{page.price_includes.mockup.sample}}</span>
             <span class="price-map-paper-rule"></span>
             <span class="price-map-paper-rule price-map-paper-rule-short"></span>
           </div>
           <div class="price-map-copy">
-            <h3>Макет</h3>
-            <p>Подготовим макет на согласование перед началом работ.</p>
+            <h3>{{page.price_includes.mockup.title}}</h3>
+            <p>{{page.price_includes.mockup.text}}</p>
           </div>
         </article>
 
         <article class="price-map-item price-map-parker">
           <div class="price-map-visual price-map-photo price-map-parker-photo">
-            <img src="assets/images/pens/parker-hero-approved-v10.png" alt="Parker Jotter в фирменной коробке">
+            <img src="{{page.price_includes.parker.image}}" alt="{{page.price_includes.parker.alt}}" data-cms-path="price_includes.parker.image">
           </div>
           <div class="price-map-copy">
-            <h3>Parker Jotter</h3>
-            <p>В фирменной коробке с гарантийным талоном.</p>
+            <h3>{{page.price_includes.parker.title}}</h3>
+            <p>{{page.price_includes.parker.text}}</p>
           </div>
         </article>
 
@@ -78,52 +75,54 @@
           <div class="price-map-visual price-map-photo price-map-packing-photo">
             <span class="packing-paper packing-paper-back" aria-hidden="true"></span>
             <span class="packing-paper packing-paper-front" aria-hidden="true"></span>
-            <img src="assets/images/portfolio/pens/04.webp" alt="Ручка Parker в подарочной упаковке">
+            <img src="{{page.price_includes.packing.image}}" alt="{{page.price_includes.packing.alt}}" data-cms-path="price_includes.packing.image">
             <span class="packing-ribbon" aria-hidden="true"></span>
           </div>
           <div class="price-map-copy">
-            <h3>Упаковка</h3>
-            <p>Упакуем готовую ручку в подарочную бумагу перед доставкой.</p>
+            <h3>{{page.price_includes.packing.title}}</h3>
+            <p>{{page.price_includes.packing.text}}</p>
           </div>
         </article>
 
         <article class="price-map-item price-map-engraving">
           <div class="price-map-visual price-map-photo price-map-engraving-photo">
-            <img src="assets/images/portfolio/pens/01.webp" alt="Ручка Parker во время подготовки к лазерной гравировке">
+            <img src="{{page.price_includes.engraving.image}}" alt="{{page.price_includes.engraving.alt}}" data-cms-path="price_includes.engraving.image">
             <span class="engraving-machine-head" aria-hidden="true"></span>
             <span class="engraving-laser-beam" aria-hidden="true"></span>
             <span class="engraving-laser-point" aria-hidden="true"></span>
           </div>
           <div class="price-map-copy">
-            <h3>Гравировка</h3>
-            <p>Нанесём согласованный текст или изображение лазером на корпус ручки.</p>
+            <h3>{{page.price_includes.engraving.title}}</h3>
+            <p>{{page.price_includes.engraving.text}}</p>
           </div>
         </article>
       </div>
     </div>
   </section>
+{{/if}}
 
+{{#if page.constructor.visible}}
   <section class="section">
     <div class="container">
       <div class="plain-section-head align-center narrow-head">
-        <h2>Конструктор гравировки</h2>
-        <p>Ниже показаны реальные рабочие зоны, в которых можно разместить гравировку на Parker Jotter. В других местах наносить текст нельзя.</p>
+        <h2>{{page.constructor.heading}}</h2>
+        <p>{{page.constructor.lead}}</p>
       </div>
 
       <div class="engraving-builder" data-engraving-builder>
         <div class="engraving-preview-card">
           <div class="engraving-preview engraving-font-gabriela" data-engraving-preview-card>
-            <div class="engraving-template" aria-label="Шаблон рабочих зон ручки Parker Jotter">
-              <img src="assets/images/pens/constructor-template.png" alt="Шаблон ручки Parker Jotter для конструктора гравировки">
+            <div class="engraving-template" aria-label="{{page.constructor.template_aria}}">
+              <img src="{{page.constructor.template_image}}" alt="{{page.constructor.template_alt}}" data-cms-path="constructor.template_image">
 
               <div class="engraving-zone zone-top-main">
-                <span class="engraving-zone-text" data-engraving-main-preview>Ваш текст</span>
+                <span class="engraving-zone-text" data-engraving-main-preview>{{page.constructor.default_text}}</span>
               </div>
               <div class="engraving-zone zone-top-side">
                 <span class="engraving-zone-text" data-engraving-side-preview></span>
               </div>
               <div class="engraving-zone zone-bottom-main">
-                <span class="engraving-zone-text" data-engraving-main-preview>Ваш текст</span>
+                <span class="engraving-zone-text" data-engraving-main-preview>{{page.constructor.default_text}}</span>
               </div>
               <div class="engraving-zone zone-bottom-side">
                 <span class="engraving-zone-text" data-engraving-side-preview></span>
@@ -135,124 +134,133 @@
         <div class="engraving-builder-controls">
           <div class="engraving-controls-grid">
             <label class="engraving-field engraving-field-main">
-              <span>Текст в основной зоне</span>
-              <input type="text" value="Ваш текст" maxlength="22" data-engraving-main-input placeholder="Например, Анна">
+              <span>{{page.constructor.main_label}}</span>
+              <input type="text" value="{{page.constructor.default_text}}" maxlength="22" data-engraving-main-input placeholder="{{page.constructor.main_placeholder}}">
             </label>
 
             <label class="engraving-field engraving-field-side">
-              <span>Текст в зоне под клипсой</span>
-              <input type="text" maxlength="14" data-engraving-side-input placeholder="Необязательно">
+              <span>{{page.constructor.side_label}}</span>
+              <input type="text" maxlength="14" data-engraving-side-input placeholder="{{page.constructor.side_placeholder}}">
             </label>
 
-            <div class="font-switcher engraving-full-row" aria-label="Выбор шрифта">
-              <button class="is-active" type="button" data-engraving-font="gabriela">Gabriela</button>
-              <button type="button" data-engraving-font="izax">Izax SHA</button>
-              <button type="button" data-engraving-font="shafarik">Shafarik</button>
+            <div class="font-switcher engraving-full-row" aria-label="{{page.constructor.font_aria}}">
+{{#each page.constructor.fonts}}
+              <button class="{{active_class}}" type="button" data-engraving-font="{{slug}}">{{label}}</button>
+{{/each}}
             </div>
 
             <label class="kerning-control engraving-full-row">
               <span class="kerning-control-head">
-                <span>Кернинг — расстояние между буквами</span>
-                <output data-engraving-kerning-value>0 px</output>
+                <span>{{page.constructor.kerning_label}}</span>
+                <output data-engraving-kerning-value>{{page.constructor.kerning_default}}</output>
               </span>
               <input type="range" min="-2" max="12" step="0.5" value="0" data-engraving-kerning>
             </label>
 
             <div class="engraving-options engraving-full-row">
-              <button type="button" data-engraving-main-example="Анна">Имя</button>
-              <button type="button" data-engraving-main-example="И. Петров">Инициалы</button>
-              <button type="button" data-engraving-main-example="С любовью">Пожелание</button>
-              <button type="button" data-engraving-main-example="12.09.2026">Дата</button>
-              <button type="button" data-engraving-side-example="LOGO">Логотип / слово</button>
+{{#each page.constructor.examples}}
+              <button type="button" {{attribute}}="{{value}}">{{label}}</button>
+{{/each}}
             </div>
 
             <div class="notice-card constructor-note engraving-full-row">
-              <strong>Важно</strong>
-              <p>Конструктор нужен для предварительного понимания расположения. Перед изготовлением мы всё равно готовим и согласовываем точный макет.</p>
+              <strong>{{page.constructor.note_title}}</strong>
+              <p>{{page.constructor.note_text}}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+{{/if}}
 
+{{#if page.gallery.visible}}
   <section class="section section-dark" id="pen-gallery">
     <div class="container">
       <div class="plain-section-head align-center narrow-head light-head">
-        <h2>Как выглядит гравировка</h2>
-        <p>Выберите фотографию. На телефоне галерею можно листать нажатием на миниатюры.</p>
+        <h2>{{page.gallery.heading}}</h2>
+        <p>{{page.gallery.lead}}</p>
       </div>
       <div class="product-gallery" data-product-gallery>
-        <div class="gallery-main"><img src="assets/images/portfolio/pens/01.webp" alt="Пример ручки с персональной гравировкой" data-gallery-main></div>
-        <div class="gallery-thumbs" aria-label="Фотографии ручек">
-          <button class="is-active" type="button" data-gallery-thumb data-src="assets/images/portfolio/pens/01.webp" data-alt="Пример ручки с персональной гравировкой, фотография 1"><img src="assets/images/portfolio/pens/01.webp" alt="Фотография 1"></button>
-          <button type="button" data-gallery-thumb data-src="assets/images/portfolio/pens/02.webp" data-alt="Пример ручки с персональной гравировкой, фотография 2"><img src="assets/images/portfolio/pens/02.webp" alt="Фотография 2"></button>
-          <button type="button" data-gallery-thumb data-src="assets/images/portfolio/pens/03.webp" data-alt="Пример ручки с персональной гравировкой, фотография 3"><img src="assets/images/portfolio/pens/03.webp" alt="Фотография 3"></button>
-          <button type="button" data-gallery-thumb data-src="assets/images/portfolio/pens/04.webp" data-alt="Пример ручки с персональной гравировкой, фотография 4"><img src="assets/images/portfolio/pens/04.webp" alt="Фотография 4"></button>
+        <div class="gallery-main"><img src="{{page.gallery.main_image}}" alt="{{page.gallery.main_alt}}" data-gallery-main data-cms-path="gallery.main_image"></div>
+        <div class="gallery-thumbs" aria-label="{{page.gallery.thumbs_aria}}">
+{{#each page.gallery.images}}
+          <button class="{{active_class}}" type="button" data-gallery-thumb data-src="{{src}}" data-alt="{{main_alt}}"><img src="{{src}}" alt="{{thumb_alt}}" data-cms-path="gallery.images[{{@index}}].src"></button>
+{{/each}}
         </div>
       </div>
     </div>
   </section>
+{{/if}}
 
+{{#if page.why_parker.visible}}
   <section class="section section-light">
     <div class="container">
       <div class="parker-split">
         <div class="parker-side parker-side-main">
-          <h2>Почему Parker Jotter?</h2>
-          <ul class="product-list parker-benefits"><li>узнаваемая модель для личного и делового подарка</li><li>достойный и надёжный вариант за оптимальную стоимость</li><li>металлический корпус идеально подходит для аккуратной гравировки</li></ul>
+          <h2>{{page.why_parker.heading}}</h2>
+          <ul class="product-list parker-benefits">
+{{#each page.why_parker.benefits}}
+            <li>{{value}}</li>
+{{/each}}
+          </ul>
         </div>
         <div class="parker-zigzag-divider" aria-hidden="true"></div>
-        <aside class="parker-side parker-side-alt"><span>Нужна другая модель?</span><h3>Рассмотрим нанесение отдельно</h3><p>Можно прислать фотографию или название другой ручки. Проверим материал корпуса и возможность гравировки либо подберём подходящий вариант под заказ.</p><a class="btn btn-outline dark-outline" href="#pen-request">Обсудить вариант</a></aside>
+        <aside class="parker-side parker-side-alt"><span>{{page.why_parker.alternate.eyebrow}}</span><h3>{{page.why_parker.alternate.heading}}</h3><p>{{page.why_parker.alternate.text}}</p><a class="btn btn-outline dark-outline" href="{{page.why_parker.alternate.cta_url}}">{{page.why_parker.alternate.cta_label}}</a></aside>
       </div>
     </div>
   </section>
+{{/if}}
 
+{{#if page.process.visible}}
   <section class="section" id="process">
     <div class="container">
       <div class="plain-section-head align-center narrow-head">
-        <h2>Как проходит заказ</h2>
-        <p>Согласование макета входит в процесс: гравировку не запускаем, пока вы не подтвердите расположение и содержание.</p>
+        <h2>{{page.process.heading}}</h2>
+        <p>{{page.process.lead}}</p>
       </div>
       <ol class="product-process">
-        <li><span>01</span><h3>Вы присылаете идею</h3><p>Текст, дату, логотип, пример или описание подарка.</p></li>
-        <li><span>02</span><h3>Проверяем нанесение</h3><p>Уточняем модель, количество и возможность гравировки.</p></li>
-        <li><span>03</span><h3>Согласуем макет</h3><p>Показываем расположение надписи до запуска работы.</p></li>
-        <li><span>04</span><h3>Изготавливаем</h3><p>Ориентировочный срок — 1–2 рабочих дня.</p></li>
-        <li><span>05</span><h3>Упаковываем и отправляем</h3><p>Согласовываем удобную службу доставки по России.</p></li>
+{{#each page.process.items}}
+        <li><span>{{number}}</span><h3>{{title}}</h3><p>{{text}}</p></li>
+{{/each}}
       </ol>
     </div>
   </section>
+{{/if}}
 
+{{#if page.delivery.visible}}
   <section class="delivery-strip" id="delivery-info">
-    <div class="container delivery-strip-inner"><div><h2>Доставка по всей России</h2><p>Отправим готовую ручку удобной для вас службой. Стоимость и срок перевозки рассчитываются отдельно до оформления заказа.</p></div><a class="btn btn-outline" href="delivery.html">Подробнее о доставке</a></div>
+    <div class="container delivery-strip-inner"><div><h2>{{page.delivery.heading}}</h2><p>{{page.delivery.text}}</p></div><a class="btn btn-outline" href="{{page.delivery.cta_url}}">{{page.delivery.cta_label}}</a></div>
   </section>
+{{/if}}
 
+{{#if page.request.visible}}
   <section class="section section-dark" id="pen-request">
     <div class="container request-grid">
-      <div><h2>Расскажите, какую надпись хотите нанести</h2><p class="lead">Можно написать идею обычными словами. Логотип или изображение приложите к форме — проверим, подходит ли файл для гравировки.</p><p class="form-note">На текущем этапе форма работает как макет. Настоящую отправку подключим перед публикацией сайта.</p></div>
+      <div><h2>{{page.request.heading}}</h2><p class="lead">{{page.request.lead}}</p><p class="form-note">{{page.request.note}}</p></div>
       <form class="request-form" data-request-form novalidate>
-        <div class="field-row"><label>Имя<input type="text" name="name" autocomplete="name" required></label><label>Телефон или мессенджер<input type="text" name="contact" required></label></div>
-        <div class="field-row"><label>Количество ручек<input type="number" name="quantity" min="1" value="1" required></label><label>Город доставки<input type="text" name="city" autocomplete="address-level2" placeholder="Например, Казань"></label></div>
-        <label>Желаемая надпись<textarea name="engraving" rows="3" placeholder="Имя, дата, пожелание или описание логотипа"></textarea></label>
-        <label>Логотип или изображение<input type="file" name="attachment" accept="image/*,.pdf,.svg"></label>
-        <label>Комментарий<textarea name="message" rows="4" placeholder="Другая модель ручки, срок, пожелания к упаковке или доставке"></textarea></label>
-        <label class="consent"><input type="checkbox" name="consent" required><span>Согласен(на) на обработку персональных данных. Политику добавим перед публикацией сайта.</span></label>
-        <button class="btn btn-primary" type="submit">Отправить на расчёт</button><p class="form-status" data-form-status role="status"></p>
+        <div class="field-row"><label>{{page.request.name_label}}<input type="text" name="name" autocomplete="name" required></label><label>{{page.request.contact_label}}<input type="text" name="contact" required></label></div>
+        <div class="field-row"><label>{{page.request.quantity_label}}<input type="number" name="quantity" min="1" value="1" required></label><label>{{page.request.city_label}}<input type="text" name="city" autocomplete="address-level2" placeholder="{{page.request.city_placeholder}}"></label></div>
+        <label>{{page.request.engraving_label}}<textarea name="engraving" rows="3" placeholder="{{page.request.engraving_placeholder}}"></textarea></label>
+        <label>{{page.request.attachment_label}}<input type="file" name="attachment" accept="image/*,.pdf,.svg"></label>
+        <label>{{page.request.message_label}}<textarea name="message" rows="4" placeholder="{{page.request.message_placeholder}}"></textarea></label>
+        <label class="consent"><input type="checkbox" name="consent" required><span>{{page.request.consent}}</span></label>
+        <button class="btn btn-primary" type="submit">{{page.request.submit_label}}</button><p class="form-status" data-form-status role="status"></p>
       </form>
     </div>
   </section>
+{{/if}}
 
+{{#if page.faq.visible}}
   <section class="section section-light">
     <div class="container faq-layout">
-      <div><h2>Частые вопросы</h2></div>
+      <div><h2>{{page.faq.heading}}</h2></div>
       <div class="faq-list">
-        <details><summary>Можно заказать одну ручку?</summary><p>Да, страница рассчитана в том числе на единичные заказы.</p></details>
-        <details><summary>Можно нанести логотип?</summary><p>Да, если логотип подходит по размеру и читаемости для рабочей области ручки.</p></details>
-        <details><summary>Можно сделать гравировку на другой модели?</summary><p>Да, по согласованию. Сначала проверим материал корпуса и возможность нанесения.</p></details>
-        <details><summary>Покажете ли макет перед изготовлением?</summary><p>Да, перед запуском гравировки отправляем макет на согласование.</p></details>
-        <details><summary>Сколько занимает изготовление?</summary><p>Ориентировочный срок — 1–2 рабочих дня, если нет сложных дополнительных условий.</p></details>
-        <details><summary>Как доставляется заказ?</summary><p>Отправим по России удобной для вас службой доставки. Точную стоимость и срок перевозки рассчитаем отдельно.</p></details>
+{{#each page.faq.items}}
+        <details><summary>{{question}}</summary><p>{{answer}}</p></details>
+{{/each}}
       </div>
     </div>
   </section>
+{{/if}}
 </main>
