@@ -59,6 +59,7 @@ def build_admin(src, public, data_dir, pages):
     manifest = {
         "branch": os.getenv("BRANCH", "feature/cms-admin-v1"),
         "site_source_path": "src/data/site.json",
+        "site_data_url": "data/site.json",
         "pages": manifest_pages,
     }
     (output_data / "manifest.json").write_text(
