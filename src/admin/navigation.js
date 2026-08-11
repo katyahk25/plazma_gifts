@@ -1,6 +1,5 @@
 (() => {
   const originalLoadPage = loadPage;
-  const originalHandlePreviewClick = handlePreviewClick;
   const originalAttachPreviewEditing = attachPreviewEditing;
   const requestedPage = new URLSearchParams(location.search).get('page');
   let firstLoad = true;
@@ -27,8 +26,64 @@
     try {
       doc.querySelector(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch {
-      // Некорректный якорь просто игнорируем.
+      // Некорректный якорь игнорируем.
     }
+  }
+
+  async function goToPage(page, hash = '') {
+    if (!page) return;
+
+    if (page.stem === state.page?.stem) {
+      if (hash) scrollPreviewToHash(hash);
+      return;
+    }
+
+    if (!confirmNavigation()) return;
+    pendingHash = hash;
+    await loadPage(page.stem);
+  }
+
+  function handleNavigationClick(event) {
+    const frameWindow = els.iframe.contentWindow;
+    const target = event.target;
+    if (!frameWindow || !(target instanceof frameWindow.HTMLElement)) return;
+
+    const anchor = target.closest('a[href]');
+    if (!anchor || event.altKey) return;
+
+    // Ссылка обрабатывается здесь и не должна попадать в редактор текста.
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    const rawHref = anchor.getAttribute('href') || '';
+    if (!rawHref || rawHref === '#') return;
+
+    if (rawHref.startsWith('#')) {
+      scrollPreviewToHash(rawHref);
+      return;
+    }
+
+    let url;
+    try {
+      url = new URL(rawHref, frameWindow.location.href);
+    } catch {
+      return;
+    }
+
+    if (!['http:', 'https:'].includes(url.protocol) || url.origin !== location.origin) {
+      window.open(url.href, '_blank', 'noopener');
+      return;
+    }
+
+    const page = pageFromUrl(url);
+    if (page) {
+      void goToPage(page, url.hash);
+      return;
+    }
+
+    // Если это ссылка на текущую страницу только с якорем.
+    if (url.hash) scrollPreviewToHash(url.hash);
   }
 
   loadPage = async function loadPageWithAdminUrl(stem) {
@@ -45,60 +100,15 @@
     history.replaceState({ page: state.page.stem }, '', `${adminUrl.pathname}${adminUrl.search}`);
   };
 
-  handlePreviewClick = function handlePreviewNavigation(event) {
-    const target = event.target;
-    if (!(target instanceof els.iframe.contentWindow.HTMLElement)) return;
-
-    const anchor = target.closest('a[href]');
-    if (!anchor || event.altKey) {
-      return originalHandlePreviewClick(event);
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const rawHref = anchor.getAttribute('href') || '';
-    if (!rawHref || rawHref === '#') return;
-
-    if (rawHref.startsWith('#')) {
-      scrollPreviewToHash(rawHref);
-      return;
-    }
-
-    let url;
-    try {
-      url = new URL(rawHref, els.iframe.contentWindow.location.href);
-    } catch {
-      return;
-    }
-
-    if (!['http:', 'https:'].includes(url.protocol)) {
-      window.open(url.href, '_blank', 'noopener');
-      return;
-    }
-
-    if (url.origin !== location.origin) {
-      window.open(url.href, '_blank', 'noopener');
-      return;
-    }
-
-    const page = pageFromUrl(url);
-    if (!page) {
-      if (url.hash) scrollPreviewToHash(url.hash);
-      return;
-    }
-
-    if (page.stem === state.page?.stem) {
-      if (url.hash) scrollPreviewToHash(url.hash);
-      return;
-    }
-
-    if (!confirmNavigation()) return;
-    pendingHash = url.hash;
-    loadPage(page.stem);
-  };
-
   attachPreviewEditing = function attachPreviewEditingWithNavigation() {
+    const frameWindow = els.iframe.contentWindow;
+
+    // Window находится выше document в capture-цепочке, поэтому этот обработчик
+    // всегда получает клик по ссылке раньше редактора элементов страницы.
+    if (frameWindow) {
+      frameWindow.addEventListener('click', handleNavigationClick, true);
+    }
+
     originalAttachPreviewEditing();
 
     const doc = els.iframe.contentDocument;
