@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="parker-v10-visual">
-        <img src="{{page.hero.image}}" alt="{{page.hero.image_alt}}">
+        <img src="{{page.hero.image}}" alt="{{page.hero.image_alt}}" data-cms-path="hero.image">
       </div>
     </div>
   </section>
@@ -63,7 +63,7 @@
 
         <article class="price-map-item price-map-parker">
           <div class="price-map-visual price-map-photo price-map-parker-photo">
-            <img src="{{page.price_includes.parker.image}}" alt="{{page.price_includes.parker.alt}}">
+            <img src="{{page.price_includes.parker.image}}" alt="{{page.price_includes.parker.alt}}" data-cms-path="price_includes.parker.image">
           </div>
           <div class="price-map-copy">
             <h3>{{page.price_includes.parker.title}}</h3>
@@ -75,7 +75,7 @@
           <div class="price-map-visual price-map-photo price-map-packing-photo">
             <span class="packing-paper packing-paper-back" aria-hidden="true"></span>
             <span class="packing-paper packing-paper-front" aria-hidden="true"></span>
-            <img src="{{page.price_includes.packing.image}}" alt="{{page.price_includes.packing.alt}}">
+            <img src="{{page.price_includes.packing.image}}" alt="{{page.price_includes.packing.alt}}" data-cms-path="price_includes.packing.image">
             <span class="packing-ribbon" aria-hidden="true"></span>
           </div>
           <div class="price-map-copy">
@@ -86,7 +86,7 @@
 
         <article class="price-map-item price-map-engraving">
           <div class="price-map-visual price-map-photo price-map-engraving-photo">
-            <img src="{{page.price_includes.engraving.image}}" alt="{{page.price_includes.engraving.alt}}">
+            <img src="{{page.price_includes.engraving.image}}" alt="{{page.price_includes.engraving.alt}}" data-cms-path="price_includes.engraving.image">
             <span class="engraving-machine-head" aria-hidden="true"></span>
             <span class="engraving-laser-beam" aria-hidden="true"></span>
             <span class="engraving-laser-point" aria-hidden="true"></span>
@@ -113,7 +113,7 @@
         <div class="engraving-preview-card">
           <div class="engraving-preview engraving-font-gabriela" data-engraving-preview-card>
             <div class="engraving-template" aria-label="{{page.constructor.template_aria}}">
-              <img src="{{page.constructor.template_image}}" alt="{{page.constructor.template_alt}}">
+              <img src="{{page.constructor.template_image}}" alt="{{page.constructor.template_alt}}" data-cms-path="constructor.template_image">
 
               <div class="engraving-zone zone-top-main">
                 <span class="engraving-zone-text" data-engraving-main-preview>{{page.constructor.default_text}}</span>
@@ -182,10 +182,10 @@
         <p>{{page.gallery.lead}}</p>
       </div>
       <div class="product-gallery" data-product-gallery>
-        <div class="gallery-main"><img src="{{page.gallery.main_image}}" alt="{{page.gallery.main_alt}}" data-gallery-main></div>
+        <div class="gallery-main"><img src="{{page.gallery.main_image}}" alt="{{page.gallery.main_alt}}" data-gallery-main data-cms-path="gallery.main_image"></div>
         <div class="gallery-thumbs" aria-label="{{page.gallery.thumbs_aria}}">
 {{#each page.gallery.images}}
-          <button class="{{active_class}}" type="button" data-gallery-thumb data-src="{{src}}" data-alt="{{main_alt}}"><img src="{{src}}" alt="{{thumb_alt}}"></button>
+          <button class="{{active_class}}" type="button" data-gallery-thumb data-src="{{src}}" data-alt="{{main_alt}}"><img src="{{src}}" alt="{{thumb_alt}}" data-cms-path="gallery.images[{{@index}}].src"></button>
 {{/each}}
         </div>
       </div>
