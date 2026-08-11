@@ -41,6 +41,7 @@ def build_admin(src, public, data_dir, pages):
     shutil.copy2(data_dir / "site.json", output_data / "site.json")
 
     manifest_pages = []
+    redirects = []
     for page in pages:
         output = page["output"]
         stem = Path(output).stem
@@ -55,6 +56,12 @@ def build_admin(src, public, data_dir, pages):
                 "data_url": f"data/pages/{stem}.json",
             }
         )
+        redirects.extend(
+            [
+                f"/{output}/admin/ /admin/?page={stem} 302",
+                f"/{output}/admin /admin/?page={stem} 302",
+            ]
+        )
 
     manifest = {
         "branch": os.getenv("BRANCH", "feature/cms-admin-v1"),
@@ -66,6 +73,21 @@ def build_admin(src, public, data_dir, pages):
         json.dumps(manifest, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+    redirects_path = public / "_redirects"
+    existing_redirects = ""
+    if redirects_path.exists():
+        existing_redirects = redirects_path.read_text(encoding="utf-8").rstrip()
+    managed_header = "# PLAZMA CMS deep links"
+    existing_lines = [
+        line for line in existing_redirects.splitlines()
+        if line.strip() != managed_header and "/admin" not in line
+    ]
+    redirect_text = "\n".join(
+        [*existing_lines, managed_header, *redirects]
+    ).strip() + "\n"
+    redirects_path.write_text(redirect_text, encoding="utf-8")
+
     print(
         "Готово: public/admin/ — визуальный редактор "
         f"(ветка: {manifest['branch']}, страниц: {len(manifest_pages)})"
