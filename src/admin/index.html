@@ -15,29 +15,81 @@
       <span class="branch-pill" id="branch-pill"></span>
       <span class="save-status" id="save-status">Без изменений</span>
       <button class="toolbar-button secondary" id="reload-button" type="button">Сбросить</button>
-      <button class="toolbar-button primary" id="save-button" type="button">Сохранить</button>
+      <button class="toolbar-button primary" id="save-button" type="button" disabled>Сохранить</button>
     </header>
 
     <main class="admin-workspace">
       <section class="preview-panel">
-        <div class="preview-hint">Нажмите на текст или изображение прямо на странице.</div>
+        <div class="preview-hint">Нажмите на текст, изображение или карточку прямо на странице.</div>
         <iframe id="site-preview" title="Предпросмотр сайта"></iframe>
       </section>
 
       <aside class="editor-panel" id="editor-panel">
+        <section class="sidebar-section seo-section">
+          <button class="section-toggle" type="button" data-toggle-target="seo-fields">
+            <span>SEO страницы</span><span>⌄</span>
+          </button>
+          <div id="seo-fields" class="section-body" hidden>
+            <label class="editor-field compact">
+              <span>Title</span>
+              <input id="seo-title" type="text">
+            </label>
+            <label class="editor-field compact">
+              <span>Description</span>
+              <textarea id="seo-description" rows="3"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="sidebar-section blocks-section">
+          <div class="section-heading">Блоки страницы</div>
+          <div id="block-list" class="block-list"></div>
+        </section>
+
         <div class="editor-empty" id="editor-empty">
           <strong>Выберите элемент на сайте</strong>
-          <p>Наведи курсор на нужный текст или изображение и нажми на него.</p>
+          <p>Наведите курсор на нужный текст, изображение или карточку и нажмите на него.</p>
         </div>
+
         <div class="editor-content" id="editor-content" hidden>
           <div class="editor-eyebrow">Редактирование</div>
           <h2 id="editor-title">Поле</h2>
           <code id="editor-path"></code>
+
           <div id="candidate-list" class="candidate-list" hidden></div>
-          <label class="editor-field">
+
+          <label class="editor-field" id="value-field">
             <span>Значение</span>
-            <textarea id="editor-text" rows="7"></textarea>
+            <textarea id="editor-text" rows="6"></textarea>
           </label>
+
+          <div class="image-tools" id="image-tools" hidden>
+            <div class="image-preview-wrap"><img id="image-preview" alt="Предпросмотр выбранного изображения"></div>
+            <label class="upload-button">
+              Заменить изображение
+              <input id="image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+            </label>
+            <small>JPG, PNG, WEBP или GIF до 4 МБ.</small>
+          </div>
+
+          <div class="block-control" id="block-control" hidden>
+            <div>
+              <strong id="block-control-title">Блок</strong>
+              <span>Можно скрыть блок без удаления его содержимого.</span>
+            </div>
+            <label class="switch"><input id="block-visible" type="checkbox"><span></span></label>
+          </div>
+
+          <div class="item-actions" id="item-actions" hidden>
+            <div class="item-actions-title">Элемент списка / карточка</div>
+            <div class="item-actions-grid">
+              <button type="button" data-item-action="up">↑ Выше</button>
+              <button type="button" data-item-action="down">↓ Ниже</button>
+              <button type="button" data-item-action="duplicate">＋ Добавить похожий</button>
+              <button type="button" class="danger" data-item-action="delete">Удалить</button>
+            </div>
+          </div>
+
           <div class="editor-note" id="editor-note"></div>
         </div>
       </aside>
@@ -46,8 +98,8 @@
 
   <dialog id="password-dialog">
     <form method="dialog" class="login-card" id="password-form">
-      <h2>Сохранение в GitHub</h2>
-      <p>Введите пароль админки. Он хранится только в текущей вкладке браузера.</p>
+      <h2>Сохранение изменений</h2>
+      <p>Введите пароль админки. Он хранится только до закрытия этой вкладки.</p>
       <input id="admin-password" type="password" autocomplete="current-password" required>
       <div class="dialog-actions">
         <button value="cancel" class="toolbar-button secondary">Отмена</button>
