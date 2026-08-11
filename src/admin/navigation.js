@@ -1,134 +1,98 @@
 (() => {
-  const originalLoadPage = loadPage;
-  const originalAttachPreviewEditing = attachPreviewEditing;
+  const iframe = document.querySelector('#site-preview');
+  const pageSelect = document.querySelector('#page-select');
   const requestedPage = new URLSearchParams(location.search).get('page');
-  let firstLoad = true;
-  let pendingHash = '';
+  let initialPageApplied = false;
 
-  function hasUnsavedChanges() {
-    return state.dirtyScopes.size > 0 || state.pendingUploads.size > 0;
+  function syncAdminUrl(stem) {
+    const url = new URL(location.href);
+    url.searchParams.set('page', stem);
+    history.replaceState({ page: stem }, '', `${url.pathname}${url.search}`);
   }
 
-  function confirmNavigation() {
-    return !hasUnsavedChanges()
-      || window.confirm('Есть несохранённые изменения. Сбросить их и перейти на другую страницу?');
+  function openPage(stem) {
+    if (!stem || !pageSelect.querySelector(`option[value="${CSS.escape(stem)}"]`)) return false;
+    pageSelect.value = stem;
+    pageSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    setTimeout(() => {
+      if (pageSelect.value === stem) syncAdminUrl(stem);
+    }, 0);
+    return true;
   }
 
-  function pageFromUrl(url) {
+  function pageStemFromUrl(url) {
     const fileName = decodeURIComponent(url.pathname.split('/').filter(Boolean).at(-1) || 'index.html');
-    return state.manifest?.pages?.find(page => page.output === fileName) || null;
+    if (!fileName.endsWith('.html')) return null;
+    return fileName.slice(0, -5) || 'index';
   }
 
-  function scrollPreviewToHash(hash) {
+  function scrollToHash(doc, hash) {
     if (!hash) return;
-    const doc = els.iframe.contentDocument;
-    if (!doc) return;
     try {
       doc.querySelector(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch {
-      // Некорректный якорь игнорируем.
+      // Некорректный якорь не должен ломать редактор.
     }
   }
 
-  async function goToPage(page, hash = '') {
-    if (!page) return;
+  function installNavigation() {
+    const win = iframe.contentWindow;
+    const doc = iframe.contentDocument;
+    if (!win || !doc) return;
 
-    if (page.stem === state.page?.stem) {
-      if (hash) scrollPreviewToHash(hash);
-      return;
+    win.addEventListener('click', event => {
+      const target = event.target;
+      if (!(target instanceof win.HTMLElement)) return;
+
+      const anchor = target.closest('a[href]');
+      if (!anchor || event.altKey) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      const rawHref = anchor.getAttribute('href') || '';
+      if (!rawHref || rawHref === '#') return;
+
+      if (rawHref.startsWith('#')) {
+        scrollToHash(doc, rawHref);
+        return;
+      }
+
+      let url;
+      try {
+        url = new URL(rawHref, win.location.href);
+      } catch {
+        return;
+      }
+
+      if (!['http:', 'https:'].includes(url.protocol) || url.origin !== location.origin) {
+        window.open(url.href, '_blank', 'noopener');
+        return;
+      }
+
+      const stem = pageStemFromUrl(url);
+      if (!stem) return;
+
+      if (stem === pageSelect.value) {
+        scrollToHash(doc, url.hash);
+        return;
+      }
+
+      openPage(stem);
+    }, true);
+
+    doc.querySelectorAll('a[href]').forEach(link => {
+      link.title = link.title
+        ? `${link.title} · Alt+клик — редактировать текст`
+        : 'Клик — перейти · Alt+клик — редактировать текст ссылки';
+    });
+
+    if (!initialPageApplied && requestedPage) {
+      initialPageApplied = true;
+      setTimeout(() => openPage(requestedPage), 0);
     }
-
-    if (!confirmNavigation()) return;
-    pendingHash = hash;
-    await loadPage(page.stem);
   }
 
-  function handleNavigationClick(event) {
-    const frameWindow = els.iframe.contentWindow;
-    const target = event.target;
-    if (!frameWindow || !(target instanceof frameWindow.HTMLElement)) return;
-
-    const anchor = target.closest('a[href]');
-    if (!anchor || event.altKey) return;
-
-    // Ссылка обрабатывается здесь и не должна попадать в редактор текста.
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-
-    const rawHref = anchor.getAttribute('href') || '';
-    if (!rawHref || rawHref === '#') return;
-
-    if (rawHref.startsWith('#')) {
-      scrollPreviewToHash(rawHref);
-      return;
-    }
-
-    let url;
-    try {
-      url = new URL(rawHref, frameWindow.location.href);
-    } catch {
-      return;
-    }
-
-    if (!['http:', 'https:'].includes(url.protocol) || url.origin !== location.origin) {
-      window.open(url.href, '_blank', 'noopener');
-      return;
-    }
-
-    const page = pageFromUrl(url);
-    if (page) {
-      void goToPage(page, url.hash);
-      return;
-    }
-
-    // Если это ссылка на текущую страницу только с якорем.
-    if (url.hash) scrollPreviewToHash(url.hash);
-  }
-
-  loadPage = async function loadPageWithAdminUrl(stem) {
-    if (firstLoad && requestedPage && state.manifest?.pages?.some(page => page.stem === requestedPage)) {
-      stem = requestedPage;
-    }
-    firstLoad = false;
-
-    await originalLoadPage(stem);
-    els.pageSelect.value = state.page.stem;
-
-    const adminUrl = new URL(location.href);
-    adminUrl.searchParams.set('page', state.page.stem);
-    history.replaceState({ page: state.page.stem }, '', `${adminUrl.pathname}${adminUrl.search}`);
-  };
-
-  attachPreviewEditing = function attachPreviewEditingWithNavigation() {
-    const frameWindow = els.iframe.contentWindow;
-
-    // Window находится выше document в capture-цепочке, поэтому этот обработчик
-    // всегда получает клик по ссылке раньше редактора элементов страницы.
-    if (frameWindow) {
-      frameWindow.addEventListener('click', handleNavigationClick, true);
-    }
-
-    originalAttachPreviewEditing();
-
-    const doc = els.iframe.contentDocument;
-    if (doc) {
-      doc.querySelectorAll('a[href]').forEach(link => {
-        link.title = link.title
-          ? `${link.title} · Alt+клик — редактировать ссылку`
-          : 'Клик — перейти · Alt+клик — редактировать текст ссылки';
-      });
-    }
-
-    if (pendingHash) {
-      const hash = pendingHash;
-      pendingHash = '';
-      requestAnimationFrame(() => scrollPreviewToHash(hash));
-    }
-  };
-
-  const hint = document.querySelector('.preview-hint');
-  if (hint) {
-    hint.textContent = 'Клик по ссылке — перейти · клик по обычному тексту — редактировать · Alt+клик по ссылке — редактировать её текст';
-  }
+  iframe.addEventListener('load', installNavigation);
 })();
