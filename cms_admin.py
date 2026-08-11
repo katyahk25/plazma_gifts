@@ -38,6 +38,7 @@ def build_admin(src, public, data_dir, pages):
     output_pages = output_data / "pages"
     output_pages.mkdir(parents=True, exist_ok=True)
 
+    site_data = json.loads((data_dir / "site.json").read_text(encoding="utf-8"))
     shutil.copy2(data_dir / "site.json", output_data / "site.json")
 
     manifest_pages = []
@@ -46,6 +47,7 @@ def build_admin(src, public, data_dir, pages):
         output = page["output"]
         stem = Path(output).stem
         source_data = page_data_dir / f"{stem}.json"
+        page_data = json.loads(source_data.read_text(encoding="utf-8"))
         shutil.copy2(source_data, output_pages / f"{stem}.json")
         manifest_pages.append(
             {
@@ -54,6 +56,7 @@ def build_admin(src, public, data_dir, pages):
                 "stem": stem,
                 "source_path": f"src/data/pages/{stem}.json",
                 "data_url": f"data/pages/{stem}.json",
+                "data": page_data,
             }
         )
         redirects.extend(
@@ -67,6 +70,7 @@ def build_admin(src, public, data_dir, pages):
         "branch": os.getenv("BRANCH", "feature/cms-admin-v1"),
         "site_source_path": "src/data/site.json",
         "site_data_url": "data/site.json",
+        "site_data": site_data,
         "pages": manifest_pages,
     }
     (output_data / "manifest.json").write_text(
