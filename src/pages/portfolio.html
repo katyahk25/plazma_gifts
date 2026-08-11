@@ -10,7 +10,7 @@
     <div class="container">
       <div class="works-grid">
 {{#each page.gallery.items}}
-        <article class="work-card" data-carousel><div class="work-media">{{#each images}}<img class="{{active_class}}" src="{{src}}" alt="{{alt}}">{{/each}}</div><div class="work-body"><h3>{{title}}</h3><p>{{text}}</p><span>{{page.gallery.hint}}</span></div></article>
+        <article class="work-card" data-carousel><div class="work-media">{{#each images}}<img class="{{active_class}}" src="{{src}}" alt="{{alt}}" data-cms-path="gallery.items[{{@parent_index}}].images[{{@index}}].src">{{/each}}</div><div class="work-body"><h3>{{title}}</h3><p>{{text}}</p><span>{{page.gallery.hint}}</span></div></article>
 {{/each}}
       </div>
       <div class="centered-action"><a class="btn btn-primary" href="{{page.cta.url}}">{{page.cta.label}}</a></div>
