@@ -2,31 +2,29 @@
   <section class="page-hero">
     <div class="container page-hero-grid">
       <div>
-        <nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>Для бизнеса</span></nav>
-        <span class="kicker">Для компаний и специалистов</span>
-        <h1>Продукция для бизнеса</h1>
-        <p class="lead">Печатаем и персонализируем материалы для продаж, работы с клиентами, мероприятий и корпоративных задач. Отправляем готовую продукцию по России.</p>
-        <div class="hero-actions"><a class="btn btn-primary" href="index.html#request">Запросить расчёт</a><a class="btn btn-outline" href="prices.html">Посмотреть цены</a></div>
+        <nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>{{page.hero.breadcrumb}}</span></nav>
+        <span class="kicker">{{page.hero.kicker}}</span>
+        <h1>{{page.hero.heading}}</h1>
+        <p class="lead">{{page.hero.lead}}</p>
+        <div class="hero-actions"><a class="btn btn-primary" href="{{page.hero.primary.url}}">{{page.hero.primary.label}}</a><a class="btn btn-outline" href="{{page.hero.secondary.url}}">{{page.hero.secondary.label}}</a></div>
       </div>
-      <aside class="page-hero-note"><strong>Единичные заказы и тиражи</strong><p>Подбираем технологию и материал под задачу, количество, бюджет и требуемый срок.</p></aside>
+      <aside class="page-hero-note"><strong>{{page.hero.note.title}}</strong><p>{{page.hero.note.text}}</p></aside>
     </div>
   </section>
 
   <section class="section section-light">
     <div class="container">
-      <div class="section-head"><div><span class="kicker">Направления</span><h2>Основные рабочие задачи</h2></div><p class="muted">Для каждого направления создана отдельная базовая страница. Подробные условия, фотографии и цены добавим дальше.</p></div>
+      <div class="section-head"><div><span class="kicker">{{page.catalog.kicker}}</span><h2>{{page.catalog.heading}}</h2></div><p class="muted">{{page.catalog.lead}}</p></div>
       <div class="service-grid">
-        <article class="service-card"><span>01</span><h3>Печати и штампы</h3><p>Круглые печати и прямоугольные штампы для рабочих процессов.</p><small>Изготовление оснастки</small><a class="service-card-link" href="seals-stamps.html" aria-label="Подробнее о печатях и штампах">Подробнее →</a></article>
-        <article class="service-card"><span>02</span><h3>Штампы с логотипом</h3><p>Фирменные штампы для повторяемого нанесения логотипа и элементов бренда.</p><small>Брендирование</small><a class="service-card-link" href="logo-stamps.html" aria-label="Подробнее о штампах с логотипом">Подробнее →</a></article>
-        <article class="service-card"><span>03</span><h3>Баннеры, визитки, листовки</h3><p>Печатные материалы для рекламы, продаж, мероприятий и передачи информации.</p><small>Печатная продукция</small><a class="service-card-link" href="print-materials.html" aria-label="Подробнее о баннерах, визитках и листовках">Подробнее →</a></article>
-      </div>
+{{#each page.catalog.items}}        <article class="service-card"><span>{{number}}</span><h3>{{title}}</h3><p>{{text}}</p><small>{{note}}</small><a class="service-card-link" href="{{url}}" aria-label="{{aria}}">Подробнее →</a></article>
+{{/each}}      </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container two-column-info">
-      <div><span class="kicker">Расчёт</span><h2>Что влияет на стоимость</h2></div>
-      <div class="check-list"><p>Вид продукции и материал</p><p>Размер и количество</p><p>Технология нанесения</p><p>Готовность макета</p><p>Срок изготовления</p><p>Город доставки</p></div>
+      <div><span class="kicker">{{page.pricing.kicker}}</span><h2>{{page.pricing.heading}}</h2></div>
+      <div class="check-list">{{#each page.pricing.items}}<p>{{value}}</p>{{/each}}</div>
     </div>
   </section>
 </main>

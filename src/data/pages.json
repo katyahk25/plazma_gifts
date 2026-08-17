@@ -1,0 +1,20 @@
+[
+  {"source": "index.html", "output": "index.html", "body_class": "page-home"},
+  {"source": "gifts.html", "output": "gifts.html", "body_class": "page-gifts"},
+  {"source": "pens.html", "output": "pens.html", "body_class": "page-pens", "header": "pens"},
+  {"source": "category.html", "output": "notebooks.html", "body_class": "page-gifts-detail page-notebooks"},
+  {"source": "category.html", "output": "mugs.html", "body_class": "page-gifts-detail page-mugs"},
+  {"source": "category.html", "output": "textile.html", "body_class": "page-gifts-detail page-textile"},
+  {"source": "category.html", "output": "canvases.html", "body_class": "page-gifts-detail page-canvases"},
+  {"source": "category.html", "output": "exlibris.html", "body_class": "page-gifts-detail page-exlibris"},
+  {"source": "category.html", "output": "gift-sets.html", "body_class": "page-gifts-detail page-gift-sets"},
+  {"source": "business.html", "output": "business.html", "body_class": "page-business"},
+  {"source": "category.html", "output": "seals-stamps.html", "body_class": "page-business-detail page-seals-stamps"},
+  {"source": "category.html", "output": "logo-stamps.html", "body_class": "page-business-detail page-logo-stamps"},
+  {"source": "category.html", "output": "print-materials.html", "body_class": "page-business-detail page-print-materials"},
+  {"source": "portfolio.html", "output": "portfolio.html", "body_class": "page-portfolio"},
+  {"source": "prices.html", "output": "prices.html", "body_class": "page-prices"},
+  {"source": "delivery.html", "output": "delivery.html", "body_class": "page-delivery"},
+  {"source": "about.html", "output": "about.html", "body_class": "page-about"},
+  {"source": "contacts.html", "output": "contacts.html", "body_class": "page-contacts"}
+]

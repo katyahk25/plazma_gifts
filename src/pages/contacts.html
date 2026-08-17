@@ -1,18 +1,18 @@
 <main>
   <section class="page-hero compact-page-hero">
     <div class="container page-hero-grid">
-      <div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>Контакты</span></nav><span class="kicker">Связаться с ПЛАЗМОЙ</span><h1>Контакты</h1><p class="lead">Пришлите задачу, фотографию, текст, логотип или пример. Укажите количество, желаемый срок и город доставки.</p></div>
-      <aside class="page-hero-note"><strong>Работаем дистанционно</strong><p>Обсуждаем заказ, согласовываем макет и организуем доставку готовой продукции по России.</p></aside>
+      <div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>{{page.hero.breadcrumb}}</span></nav><span class="kicker">{{page.hero.kicker}}</span><h1>{{page.hero.heading}}</h1><p class="lead">{{page.hero.lead}}</p></div>
+      <aside class="page-hero-note"><strong>{{page.hero.note_title}}</strong><p>{{page.hero.note_text}}</p></aside>
     </div>
   </section>
 
   <section class="section section-light">
     <div class="container contact-grid">
-      <article class="contact-card"><span>Телефон</span><a href="tel:+79610627605">8 961 062-76-05</a><p>Для звонка или сообщения по заказу.</p></article>
-      <article class="contact-card"><span>ВКонтакте</span><a href="https://vk.ru/plazma_gifts" target="_blank" rel="noopener">ПЛАЗМА</a><p>Сообщество с примерами работ и сообщениями.</p></article>
-      <article class="contact-card"><span>Расчёт заказа</span><a href="index.html#request">Заполнить форму</a><p>Подойдёт, если удобно сразу описать задачу подробно.</p></article>
+{{#each page.cards}}
+      <article class="contact-card"><span>{{label}}</span><a href="{{url}}" target="{{target}}" rel="{{rel}}">{{link}}</a><p>{{text}}</p></article>
+{{/each}}
     </div>
   </section>
 
-  <section class="section"><div class="container two-column-info"><div><span class="kicker">Для быстрого расчёта</span><h2>Что написать в сообщении</h2></div><div class="check-list"><p>Какое изделие требуется</p><p>Количество и размер</p><p>Что нужно нанести</p><p>Есть ли готовый файл</p><p>Желаемый срок</p><p>Город доставки</p></div></div></section>
+  <section class="section"><div class="container two-column-info"><div><span class="kicker">{{page.quick.kicker}}</span><h2>{{page.quick.heading}}</h2></div><div class="check-list">{{#each page.quick.items}}<p>{{value}}</p>{{/each}}</div></div></section>
 </main>

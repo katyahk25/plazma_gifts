@@ -1,230 +1,161 @@
+import json
+import re
 from pathlib import Path
+
+from cms_admin import build_admin
 
 root = Path(__file__).resolve().parent
 src = root / "src"
 public = root / "public"
+data_dir = src / "data"
+page_data_dir = data_dir / "pages"
 
 layout = (src / "layout.html").read_text(encoding="utf-8")
-header = (src / "partials/header.html").read_text(encoding="utf-8")
-header_pens = (src / "partials/header-pens.html").read_text(encoding="utf-8")
 footer = (src / "partials/footer.html").read_text(encoding="utf-8")
+header_templates = {
+    "default": (src / "partials/header.html").read_text(encoding="utf-8"),
+    "pens": (src / "partials/header-pens.html").read_text(encoding="utf-8"),
+}
+site_data = json.loads((data_dir / "site.json").read_text(encoding="utf-8"))
+pages = json.loads((data_dir / "pages.json").read_text(encoding="utf-8"))
 
-pages = [
-    {
-        "source": "index.html",
-        "output": "index.html",
-        "title": "ПЛАЗМА — индивидуальные подарки и печать с доставкой по России",
-        "description": "Индивидуальные подарки, персонализация и печатная продукция с доставкой по России.",
-        "body_class": "page-home",
-    },
-    {
-        "source": "gifts.html",
-        "output": "gifts.html",
-        "title": "Индивидуальные подарки — ПЛАЗМА",
-        "description": "Персональные ручки, ежедневники, кружки, холсты и текстиль с доставкой по России.",
-        "body_class": "page-gifts",
-    },
-    {
-        "source": "pens.html",
-        "output": "pens.html",
-        "title": "Ручки Parker Jotter с гравировкой — ПЛАЗМА",
-        "description": "Parker Jotter с персональной гравировкой от 3 000 ₽. Макет, упаковка, изготовление за 1–2 рабочих дня и доставка по России.",
-        "body_class": "page-pens",
-    },
-    {
-        "source": "category.html",
-        "output": "notebooks.html",
-        "title": "Ежедневники с персонализацией — ПЛАЗМА",
-        "description": "Ежедневники с индивидуальным оформлением обложки и доставкой по России.",
-        "body_class": "page-gifts-detail page-notebooks",
-        "vars": {
-            "PARENT_URL": "gifts.html", "PARENT_LABEL": "Подарки", "KICKER": "Персонализация обложки", "HEADING": "Ежедневники",
-            "LEAD": "Ежедневники с индивидуальным оформлением: текстом, изображением или композицией на обложке.",
-            "NOTE_TITLE": "УФ-печать", "NOTE_TEXT": "Базовый раздел подготовлен для дальнейшего наполнения вариантами ежедневников, фотографиями и ценами.",
-            "ITEM_1_TITLE": "Оформление", "ITEM_1_TEXT": "Текст, изображение или композиция на обложке.", "ITEM_1_NOTE": "Индивидуальный дизайн",
-            "ITEM_2_TITLE": "Персонализация", "ITEM_2_TEXT": "Имя, памятная надпись или фирменная графика.", "ITEM_2_NOTE": "Под задачу",
-            "ITEM_3_TITLE": "Заказ", "ITEM_3_TEXT": "Уточняем количество, оформление, срок и доставку.", "ITEM_3_NOTE": "Индивидуальный расчёт",
-        },
-    },
-    {
-        "source": "category.html",
-        "output": "mugs.html",
-        "title": "Кружки с индивидуальной печатью — ПЛАЗМА",
-        "description": "Кружки с фотографиями, иллюстрациями и надписями с доставкой по России.",
-        "body_class": "page-gifts-detail page-mugs",
-        "vars": {
-            "PARENT_URL": "gifts.html", "PARENT_LABEL": "Подарки", "KICKER": "Индивидуальная печать", "HEADING": "Кружки",
-            "LEAD": "Керамические кружки с фотографиями, иллюстрациями, надписями и персональным оформлением.",
-            "NOTE_TITLE": "Сублимационная печать", "NOTE_TEXT": "Пока оставляем базовую структуру. Позже добавим варианты кружек, примеры работ, цены и рекомендации по уходу.",
-            "ITEM_1_TITLE": "Фотографии", "ITEM_1_TEXT": "Переносим личные фотографии и памятные изображения.", "ITEM_1_NOTE": "Персональный подарок",
-            "ITEM_2_TITLE": "Надписи", "ITEM_2_TEXT": "Добавляем имена, даты, фразы и поздравления.", "ITEM_2_NOTE": "Индивидуальный текст",
-            "ITEM_3_TITLE": "Иллюстрации", "ITEM_3_TEXT": "Используем готовую графику или подготовленную композицию.", "ITEM_3_NOTE": "Печать по макету",
-        },
-    },
-    {
-        "source": "category.html",
-        "output": "textile.html",
-        "title": "Текстиль с индивидуальной печатью — ПЛАЗМА",
-        "description": "Текстиль с надписями, изображениями и логотипами с доставкой по России.",
-        "body_class": "page-gifts-detail page-textile",
-        "vars": {
-            "PARENT_URL": "gifts.html", "PARENT_LABEL": "Подарки", "KICKER": "Нанесение на текстиль", "HEADING": "Текстиль",
-            "LEAD": "Текстиль с надписями, изображениями и индивидуальным оформлением для подарков и небольших тиражей.",
-            "NOTE_TITLE": "DTF-печать", "NOTE_TEXT": "Раздел подготовлен как основа для каталога изделий, вариантов нанесения, размеров и стоимости.",
-            "ITEM_1_TITLE": "Изображения", "ITEM_1_TEXT": "Полноцветные изображения и иллюстрации на текстиле.", "ITEM_1_NOTE": "DTF-печать",
-            "ITEM_2_TITLE": "Надписи", "ITEM_2_TEXT": "Имена, фразы и персональные композиции.", "ITEM_2_NOTE": "Индивидуальный заказ",
-            "ITEM_3_TITLE": "Небольшие тиражи", "ITEM_3_TEXT": "Подходит для единичных изделий и небольших партий.", "ITEM_3_NOTE": "Количество по задаче",
-        },
-    },
-    {
-        "source": "category.html",
-        "output": "canvases.html",
-        "title": "Картины и фотографии на холсте — ПЛАЗМА",
-        "description": "Фотографии, портреты и изображения на холсте с доставкой по России.",
-        "body_class": "page-gifts-detail page-canvases",
-        "vars": {
-            "PARENT_URL": "gifts.html", "PARENT_LABEL": "Подарки", "KICKER": "Печать на холсте", "HEADING": "Холсты",
-            "LEAD": "Фотографии, портреты и памятные изображения на холсте для персонального подарка и интерьера.",
-            "NOTE_TITLE": "Печать на холсте", "NOTE_TEXT": "Позже здесь появятся доступные размеры, примеры оформления, фотографии готовых работ и цены.",
-            "ITEM_1_TITLE": "Фотографии", "ITEM_1_TEXT": "Печатаем личные и семейные фотографии на холсте.", "ITEM_1_NOTE": "Фото на холсте",
-            "ITEM_2_TITLE": "Портреты", "ITEM_2_TEXT": "Подготавливаем изображения под выбранный формат.", "ITEM_2_NOTE": "Подготовка изображения",
-            "ITEM_3_TITLE": "Размер", "ITEM_3_TEXT": "Формат подбирается под изображение и задачу.", "ITEM_3_NOTE": "Индивидуальный подбор",
-        },
-    },
-    {
-        "source": "category.html",
-        "output": "exlibris.html",
-        "title": "Экслибрисы — ПЛАЗМА",
-        "description": "Персональные экслибрисы и книжные знаки на заказ.",
-        "body_class": "page-gifts-detail page-exlibris",
-        "vars": {
-            "PARENT_URL": "gifts.html", "PARENT_LABEL": "Подарки", "KICKER": "Персональный книжный знак", "HEADING": "Экслибрисы",
-            "LEAD": "Индивидуальные книжные знаки с именем, инициалами или графикой для личной библиотеки и подарка.",
-            "NOTE_TITLE": "Раздел в разработке", "NOTE_TEXT": "Сейчас создана структура страницы. Варианты исполнения, примеры и стоимость добавим следующим этапом.",
-            "ITEM_1_TITLE": "Имя и инициалы", "ITEM_1_TEXT": "Основа персонального книжного знака под владельца библиотеки.", "ITEM_1_NOTE": "Персонализация",
-            "ITEM_2_TITLE": "Графика", "ITEM_2_TEXT": "Можно заложить символ, изображение или декоративную композицию.", "ITEM_2_NOTE": "Индивидуальное оформление",
-            "ITEM_3_TITLE": "Подарочный вариант", "ITEM_3_TEXT": "Экслибрис можно подготовить как персональный подарок любителю книг.", "ITEM_3_NOTE": "Под конкретного человека",
-        },
-    },
-    {
-        "source": "category.html",
-        "output": "gift-sets.html",
-        "title": "Подарочные наборы с персонализацией — ПЛАЗМА",
-        "description": "Персонализированные подарочные наборы из нескольких изделий с доставкой по России.",
-        "body_class": "page-gifts-detail page-gift-sets",
-        "vars": {
-            "PARENT_URL": "gifts.html", "PARENT_LABEL": "Подарки", "KICKER": "Индивидуальная комплектация", "HEADING": "Подарочные наборы",
-            "LEAD": "Объединяем несколько персонализированных изделий в один подарок под человека, повод или задачу.",
-            "NOTE_TITLE": "Состав подбирается индивидуально", "NOTE_TEXT": "На следующем этапе добавим готовые сочетания, варианты упаковки, фотографии и диапазоны стоимости.",
-            "ITEM_1_TITLE": "Состав", "ITEM_1_TEXT": "Комбинируем подходящие изделия в одном наборе.", "ITEM_1_NOTE": "Индивидуальная комплектация",
-            "ITEM_2_TITLE": "Персонализация", "ITEM_2_TEXT": "Связываем предметы общей надписью, именем или оформлением.", "ITEM_2_NOTE": "Единая идея",
-            "ITEM_3_TITLE": "Повод", "ITEM_3_TEXT": "Подбираем набор под конкретного человека, событие или задачу.", "ITEM_3_NOTE": "Под получателя",
-        },
-    },
-    {
-        "source": "business.html",
-        "output": "business.html",
-        "title": "Продукция для бизнеса — ПЛАЗМА",
-        "description": "Полиграфия, печати, штампы, баннеры и брендированная продукция с доставкой по России.",
-        "body_class": "page-business",
-    },
-    {
-        "source": "category.html",
-        "output": "seals-stamps.html",
-        "title": "Печати и штампы — ПЛАЗМА",
-        "description": "Печати и штампы для рабочих задач и бизнеса.",
-        "body_class": "page-business-detail page-seals-stamps",
-        "vars": {
-            "PARENT_URL": "business.html", "PARENT_LABEL": "Для бизнеса", "KICKER": "Рабочая оснастка", "HEADING": "Печати и штампы",
-            "LEAD": "Круглые печати и прямоугольные штампы для повседневных рабочих задач.",
-            "NOTE_TITLE": "Изготовление под задачу", "NOTE_TEXT": "Базовая страница готова. Позже добавим типы оснастки, размеры, примеры и цены.",
-            "ITEM_1_TITLE": "Круглые печати", "ITEM_1_TEXT": "Раздел для стандартных и индивидуальных вариантов печатей.", "ITEM_1_NOTE": "Оснастка под формат",
-            "ITEM_2_TITLE": "Прямоугольные штампы", "ITEM_2_TEXT": "Штампы для реквизитов, служебных отметок и рабочих процессов.", "ITEM_2_NOTE": "Рабочие задачи",
-            "ITEM_3_TITLE": "Макет", "ITEM_3_TEXT": "Подготавливаем расположение текста и графики под выбранный размер.", "ITEM_3_NOTE": "Подготовка к изготовлению",
-        },
-    },
-    {
-        "source": "category.html",
-        "output": "logo-stamps.html",
-        "title": "Штампы с логотипом — ПЛАЗМА",
-        "description": "Штампы с логотипом для брендирования упаковки, документов и продукции.",
-        "body_class": "page-business-detail page-logo-stamps",
-        "vars": {
-            "PARENT_URL": "business.html", "PARENT_LABEL": "Для бизнеса", "KICKER": "Брендирование", "HEADING": "Штампы с логотипом",
-            "LEAD": "Штампы с фирменной графикой для повторяемого нанесения логотипа и элементов бренда.",
-            "NOTE_TITLE": "Логотип под рабочий формат", "NOTE_TEXT": "На следующем этапе добавим варианты размеров, примеры применения, требования к логотипу и стоимость.",
-            "ITEM_1_TITLE": "Логотип", "ITEM_1_TEXT": "Подготавливаем фирменный знак под рабочую область штампа.", "ITEM_1_NOTE": "Фирменная графика",
-            "ITEM_2_TITLE": "Применение", "ITEM_2_TEXT": "Для упаковки, документов и других повторяемых задач брендирования.", "ITEM_2_NOTE": "Для бизнеса",
-            "ITEM_3_TITLE": "Размер", "ITEM_3_TEXT": "Подбирается под графику, читаемость и способ использования.", "ITEM_3_NOTE": "Под задачу",
-        },
-    },
-    {
-        "source": "category.html",
-        "output": "print-materials.html",
-        "title": "Баннеры, визитки и листовки — ПЛАЗМА",
-        "description": "Баннеры, визитки и листовки для рекламы, продаж и рабочих задач.",
-        "body_class": "page-business-detail page-print-materials",
-        "vars": {
-            "PARENT_URL": "business.html", "PARENT_LABEL": "Для бизнеса", "KICKER": "Печатная продукция", "HEADING": "Баннеры, визитки, листовки",
-            "LEAD": "Печатные материалы для рекламы, продаж, мероприятий и передачи информации клиентам.",
-            "NOTE_TITLE": "Формат под задачу", "NOTE_TEXT": "Сейчас создан общий раздел. Позже разделим варианты, добавим материалы, тиражи, сроки, примеры и цены.",
-            "ITEM_1_TITLE": "Баннеры", "ITEM_1_TEXT": "Рекламные и информационные баннеры под нужный размер.", "ITEM_1_NOTE": "Широкоформатная печать",
-            "ITEM_2_TITLE": "Визитки", "ITEM_2_TEXT": "Печатные материалы для знакомства и передачи контактов.", "ITEM_2_NOTE": "Деловая полиграфия",
-            "ITEM_3_TITLE": "Листовки", "ITEM_3_TEXT": "Материалы для рекламы, акций, предложений и информации.", "ITEM_3_NOTE": "Рекламная полиграфия",
-        },
-    },
-    {
-        "source": "portfolio.html",
-        "output": "portfolio.html",
-        "title": "Работы ПЛАЗМЫ — примеры персонализации и печати",
-        "description": "Примеры выполненных заказов: ручки, ежедневники, холсты и кружки.",
-        "body_class": "page-portfolio",
-    },
-    {
-        "source": "prices.html",
-        "output": "prices.html",
-        "title": "Цены — ПЛАЗМА",
-        "description": "Ориентировочные цены на популярные изделия и индивидуальный расчёт заказа.",
-        "body_class": "page-prices",
-    },
-    {
-        "source": "delivery.html",
-        "output": "delivery.html",
-        "title": "Доставка и оплата — ПЛАЗМА",
-        "description": "Изготовление на заказ и доставка продукции ПЛАЗМЫ по России.",
-        "body_class": "page-delivery",
-    },
-    {
-        "source": "about.html",
-        "output": "about.html",
-        "title": "О студии ПЛАЗМА",
-        "description": "ПЛАЗМА — студия персонализации подарков и печатной продукции.",
-        "body_class": "page-about",
-    },
-    {
-        "source": "contacts.html",
-        "output": "contacts.html",
-        "title": "Контакты — ПЛАЗМА",
-        "description": "Связаться с ПЛАЗМОЙ и отправить задачу на расчёт.",
-        "body_class": "page-contacts",
-    },
-]
+MISSING = object()
+
+OPEN_BLOCK_RE = re.compile(r"{{#(each|if)\s+([A-Za-z0-9_.@-]+)}}")
+BLOCK_TOKEN_RE = re.compile(
+    r"{{#(?P<open_kind>each|if)\s+(?P<path>[A-Za-z0-9_.@-]+)}}"
+    r"|{{/(?P<close_kind>each|if)}}"
+)
+VAR_RE = re.compile(r"{{\s*([A-Za-z0-9_.@-]+)\s*}}")
+
+
+def resolve(context, path):
+    value = context
+    for part in path.split("."):
+        if isinstance(value, dict) and part in value:
+            value = value[part]
+        else:
+            return MISSING
+    return value
+
+
+def render_blocks(template, context):
+    opening = OPEN_BLOCK_RE.search(template)
+    if not opening:
+        return template
+
+    stack = [opening.group(1)]
+    closing = None
+
+    for token in BLOCK_TOKEN_RE.finditer(template, opening.end()):
+        open_kind = token.group("open_kind")
+        close_kind = token.group("close_kind")
+
+        if open_kind:
+            stack.append(open_kind)
+            continue
+
+        if not stack or stack[-1] != close_kind:
+            raise ValueError(f"Некорректно закрыт шаблонный блок: {close_kind}")
+
+        stack.pop()
+        if not stack:
+            closing = token
+            break
+
+    if closing is None:
+        raise ValueError(f"Не закрыт шаблонный блок: {opening.group(1)} {opening.group(2)}")
+
+    before = template[: opening.start()]
+    inner = template[opening.end() : closing.start()]
+    after = template[closing.end() :]
+    block_type = opening.group(1)
+    path = opening.group(2)
+    value = resolve(context, path)
+
+    if block_type == "each":
+        if value is MISSING or not isinstance(value, list):
+            rendered_block = ""
+        else:
+            rendered_items = []
+            for index, item in enumerate(value):
+                child = dict(context)
+                if "@index" in context:
+                    child["@parent_index"] = context["@index"]
+                child["@index"] = index
+                child["item"] = item
+                if isinstance(item, dict):
+                    child.update(item)
+                else:
+                    child["value"] = item
+                rendered_items.append(render(inner, child))
+            rendered_block = "".join(rendered_items)
+    else:
+        rendered_block = render(inner, context) if value is not MISSING and value else ""
+
+    return render_blocks(before + rendered_block + after, context)
+
+
+def render(template, context):
+    template = render_blocks(template, context)
+
+    def render_var(match):
+        value = resolve(context, match.group(1))
+        if value is MISSING:
+            return match.group(0)
+        if value is None:
+            return ""
+        if isinstance(value, (dict, list)):
+            raise ValueError(f"Нельзя вывести составное значение напрямую: {match.group(1)}")
+        return str(value)
+
+    return VAR_RE.sub(render_var, template)
+
 
 public.mkdir(parents=True, exist_ok=True)
 
 for page in pages:
-    content = (src / "pages" / page["source"]).read_text(encoding="utf-8")
+    output_stem = Path(page["output"]).stem
+    page_data_path = page_data_dir / f"{output_stem}.json"
+
+    if not page_data_path.exists():
+        raise FileNotFoundError(f"Нет CMS-данных страницы: {page_data_path}")
+
+    page_data = json.loads(page_data_path.read_text(encoding="utf-8"))
+    seo = page_data.get("seo", {})
+    title = seo.get("title")
+    description = seo.get("description")
+
+    if not title or not description:
+        raise ValueError(f"Не заполнены SEO title/description для {page['output']}")
+
+    context = {
+        "site": site_data,
+        "page": page_data,
+    }
+
+    content_template = (src / "pages" / page["source"]).read_text(encoding="utf-8")
+    content = render(content_template, context)
+
+    if "{{" in content or "}}" in content:
+        raise ValueError(f"После сборки остались шаблонные переменные в {page['output']}")
+
+    header_name = page.get("header", "default")
+    if header_name not in header_templates:
+        raise ValueError(f"Неизвестный вариант шапки: {header_name}")
+    header = render(header_templates[header_name], context)
+
     html = (
-        layout.replace("{{TITLE}}", page["title"])
-        .replace("{{DESCRIPTION}}", page["description"])
+        layout.replace("{{TITLE}}", title)
+        .replace("{{DESCRIPTION}}", description)
         .replace("{{BODY_CLASS}}", page["body_class"])
-        .replace("{{HEADER}}", header_pens if page["body_class"] == "page-pens" else header)
+        .replace("{{HEADER}}", header)
         .replace("{{CONTENT}}", content)
         .replace("{{FOOTER}}", footer)
     )
 
-    for key, value in page.get("vars", {}).items():
-        html = html.replace("{{" + key + "}}", value)
-
     (public / page["output"]).write_text(html, encoding="utf-8")
     print(f"Готово: public/{page['output']}")
+
+
+build_admin(src=src, public=public, data_dir=data_dir, pages=pages)

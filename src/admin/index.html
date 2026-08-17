@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ПЛАЗМА — визуальное управление сайтом</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <header class="admin-toolbar">
+      <a class="admin-brand" href="../index.html" target="_blank" rel="noopener">ПЛАЗМА</a>
+      <label class="page-picker">Страница <select id="page-select"></select></label>
+      <span class="branch-pill" id="branch-pill"></span>
+      <span class="save-status" id="save-status">Без изменений</span>
+      <button class="toolbar-button secondary" id="reload-button" type="button">Сбросить</button>
+      <button class="toolbar-button primary" id="save-button" type="button" disabled>Сохранить</button>
+    </header>
+
+    <main class="admin-workspace">
+      <section class="preview-panel">
+        <div class="preview-hint">Клик по ссылке — перейти · клик по обычному тексту — редактировать · Alt+клик по ссылке — редактировать её текст</div>
+        <iframe id="site-preview" title="Предпросмотр сайта"></iframe>
+      </section>
+
+      <aside class="editor-panel" id="editor-panel">
+        <section class="panel-section compact-section">
+          <button class="panel-toggle" type="button" data-toggle-target="seo-panel">SEO страницы <span>▾</span></button>
+          <div id="seo-panel" class="panel-collapsible" hidden>
+            <label class="editor-field"><span>Title</span><input id="seo-title" type="text"></label>
+            <label class="editor-field"><span>Description</span><textarea id="seo-description" rows="4"></textarea></label>
+          </div>
+        </section>
+
+        <section class="panel-section compact-section">
+          <button class="panel-toggle" type="button" data-toggle-target="blocks-panel">Блоки страницы <span>▾</span></button>
+          <div id="blocks-panel" class="panel-collapsible" hidden>
+            <div id="block-list" class="block-list"></div>
+          </div>
+        </section>
+
+        <div class="editor-empty" id="editor-empty">
+          <strong>Выберите элемент на сайте</strong>
+          <p>Наведи курсор на нужный текст или изображение и нажми на него.</p>
+        </div>
+
+        <div class="editor-content" id="editor-content" hidden>
+          <div class="editor-eyebrow">Редактирование</div>
+          <h2 id="editor-title">Поле</h2>
+          <code id="editor-path"></code>
+          <div id="candidate-list" class="candidate-list" hidden></div>
+
+          <label class="editor-field">
+            <span>Значение</span>
+            <textarea id="editor-text" rows="7"></textarea>
+          </label>
+
+          <div id="image-tools" class="image-tools" hidden>
+            <div class="image-preview-wrap">
+              <img id="image-preview" alt="Предпросмотр выбранного изображения">
+            </div>
+            <label class="upload-button" for="image-file">
+              <span>Заменить изображение</span>
+              <input id="image-file" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+            </label>
+            <small>JPG, PNG, WEBP или GIF · до 4 МБ</small>
+          </div>
+
+          <div id="block-control" class="block-control" hidden>
+            <div><strong id="block-control-title">Блок</strong><small>Видимость блока</small></div>
+            <label class="switch"><input id="block-visible" type="checkbox"><span></span></label>
+          </div>
+
+          <div id="item-actions" class="item-actions" hidden>
+            <span>Элемент списка</span>
+            <div class="item-action-grid">
+              <button type="button" data-item-action="up">↑ Выше</button>
+              <button type="button" data-item-action="down">↓ Ниже</button>
+              <button type="button" data-item-action="duplicate">＋ Копия</button>
+              <button type="button" data-item-action="delete" class="danger">Удалить</button>
+            </div>
+          </div>
+
+          <div class="editor-note" id="editor-note"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="password-dialog">
+    <form method="dialog" class="login-card" id="password-form">
+      <h2>Сохранение в GitHub</h2>
+      <p>Введите пароль админки. Он хранится только в текущей вкладке браузера.</p>
+      <input id="admin-password" type="password" autocomplete="current-password" required>
+      <div class="dialog-actions">
+        <button value="cancel" class="toolbar-button secondary">Отмена</button>
+        <button value="default" class="toolbar-button primary">Продолжить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="admin.js"></script>
+  <script src="cms-bindings.js"></script>
+</body>
+</html>

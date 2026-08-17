@@ -1,0 +1,57 @@
+{
+  "seo": {
+    "title": "Работы ПЛАЗМЫ — примеры персонализации и печати",
+    "description": "Примеры выполненных заказов: ручки, ежедневники, холсты и кружки."
+  },
+  "hero": {
+    "breadcrumb": "Работы",
+    "kicker": "Портфолио",
+    "heading": "Реальные работы",
+    "lead": "Здесь собраны примеры уже выполненных заказов. На компьютере наведите курсор на карточку, на телефоне нажимайте на фотографию.",
+    "note_title": "Покажем макет заранее",
+    "note_text": "Каждый новый заказ согласовываем до изготовления, поэтому пример можно адаптировать под вашу идею."
+  },
+  "gallery": {
+    "hint": "Наведите или нажмите",
+    "items": [
+      {
+        "title": "Ручки с гравировкой",
+        "text": "Подарочные ручки, именные надписи и персонализация.",
+        "images": [
+          {"src": "assets/images/portfolio/pens/01.webp", "alt": "Ручки с гравировкой, фото 1", "active_class": "is-active"},
+          {"src": "assets/images/portfolio/pens/02.webp", "alt": "Ручки с гравировкой, фото 2", "active_class": ""},
+          {"src": "assets/images/portfolio/pens/03.webp", "alt": "Ручки с гравировкой, фото 3", "active_class": ""},
+          {"src": "assets/images/portfolio/pens/04.webp", "alt": "Ручки с гравировкой, фото 4", "active_class": ""}
+        ]
+      },
+      {
+        "title": "Ежедневники с дизайном",
+        "text": "УФ-печать, подарочные надписи и оформление обложки.",
+        "images": [
+          {"src": "assets/images/portfolio/notebooks/01.webp", "alt": "Ежедневники, фото 1", "active_class": "is-active"},
+          {"src": "assets/images/portfolio/notebooks/02.webp", "alt": "Ежедневники, фото 2", "active_class": ""},
+          {"src": "assets/images/portfolio/notebooks/03.webp", "alt": "Ежедневники, фото 3", "active_class": ""},
+          {"src": "assets/images/portfolio/notebooks/04.webp", "alt": "Ежедневники, фото 4", "active_class": ""}
+        ]
+      },
+      {
+        "title": "Холсты по фотографиям",
+        "text": "Портреты питомцев и памятные изображения на холсте.",
+        "images": [
+          {"src": "assets/images/portfolio/canvases/01.webp", "alt": "Холсты, фото 1", "active_class": "is-active"},
+          {"src": "assets/images/portfolio/canvases/02.webp", "alt": "Холсты, фото 2", "active_class": ""},
+          {"src": "assets/images/portfolio/canvases/03.webp", "alt": "Холсты, фото 3", "active_class": ""}
+        ]
+      },
+      {
+        "title": "Кружки с дизайном",
+        "text": "Фотографии, иллюстрации и подписи на керамических кружках.",
+        "images": [
+          {"src": "assets/images/portfolio/mugs/01.webp", "alt": "Кружки, фото 1", "active_class": "is-active"},
+          {"src": "assets/images/portfolio/mugs/02.webp", "alt": "Кружки, фото 2", "active_class": ""}
+        ]
+      }
+    ]
+  },
+  "cta": {"label": "Обсудить свой заказ", "url": "index.html#request"}
+}

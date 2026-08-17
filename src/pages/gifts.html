@@ -2,36 +2,30 @@
   <section class="page-hero">
     <div class="container page-hero-grid">
       <div>
-        <nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>Индивидуальные подарки</span></nav>
-        <span class="kicker">Создано для конкретного человека</span>
-        <h1>Индивидуальные подарки</h1>
-        <p class="lead">Наносим фотографии, имена, даты, личные фразы и авторские изображения. До изготовления показываем макет, готовый заказ отправляем по России.</p>
-        <div class="hero-actions"><a class="btn btn-primary" href="index.html#request">Получить расчёт</a><a class="btn btn-outline" href="portfolio.html">Посмотреть работы</a></div>
+        <nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>{{page.hero.breadcrumb}}</span></nav>
+        <span class="kicker">{{page.hero.kicker}}</span>
+        <h1>{{page.hero.heading}}</h1>
+        <p class="lead">{{page.hero.lead}}</p>
+        <div class="hero-actions"><a class="btn btn-primary" href="{{page.hero.primary.url}}">{{page.hero.primary.label}}</a><a class="btn btn-outline" href="{{page.hero.secondary.url}}">{{page.hero.secondary.label}}</a></div>
       </div>
-      <aside class="page-hero-note"><strong>Не нужен готовый макет</strong><p>Можно прислать фотографию, текст, идею или пример. Мы поможем собрать оформление под выбранное изделие.</p></aside>
+      <aside class="page-hero-note"><strong>{{page.hero.note.title}}</strong><p>{{page.hero.note.text}}</p></aside>
     </div>
   </section>
 
   <section class="section section-light">
     <div class="container">
-      <div class="section-head"><div><span class="kicker">Категории</span><h2>Что можно персонализировать</h2></div><p class="muted">Для каждого направления уже есть отдельная базовая страница. Наполнение фотографиями, вариантами и ценами будем добавлять дальше.</p></div>
+      <div class="section-head"><div><span class="kicker">{{page.catalog.kicker}}</span><h2>{{page.catalog.heading}}</h2></div><p class="muted">{{page.catalog.lead}}</p></div>
       <div class="service-grid">
-        <article class="service-card"><span>01</span><h3>Ручки с гравировкой</h3><p>Имена, памятные фразы, даты и логотипы на подарочных ручках.</p><small>Лазерная гравировка</small><a class="service-card-link" href="pens.html" aria-label="Подробнее о ручках с гравировкой">Подробнее →</a></article>
-        <article class="service-card"><span>02</span><h3>Ежедневники</h3><p>Персональное оформление обложки: текст, изображение или композиция.</p><small>УФ-печать</small><a class="service-card-link" href="notebooks.html" aria-label="Подробнее о ежедневниках">Подробнее →</a></article>
-        <article class="service-card"><span>03</span><h3>Кружки</h3><p>Фотографии, иллюстрации и подписи на керамических кружках.</p><small>Сублимационная печать</small><a class="service-card-link" href="mugs.html" aria-label="Подробнее о кружках">Подробнее →</a></article>
-        <article class="service-card"><span>04</span><h3>Текстиль</h3><p>Надписи, изображения и небольшие тиражи текстиля с нанесением.</p><small>DTF-печать</small><a class="service-card-link" href="textile.html" aria-label="Подробнее о текстиле">Подробнее →</a></article>
-        <article class="service-card"><span>05</span><h3>Холсты</h3><p>Портреты, семейные фотографии и изображения питомцев на холсте.</p><small>Печать на холсте</small><a class="service-card-link" href="canvases.html" aria-label="Подробнее о холстах">Подробнее →</a></article>
-        <article class="service-card"><span>06</span><h3>Экслибрисы</h3><p>Персональные книжные знаки с именем, инициалами или графикой.</p><small>Индивидуальное оформление</small><a class="service-card-link" href="exlibris.html" aria-label="Подробнее об экслибрисах">Подробнее →</a></article>
-        <article class="service-card"><span>07</span><h3>Подарочные наборы</h3><p>Сочетаем несколько персонализированных изделий в одном заказе.</p><small>Индивидуальная комплектация</small><a class="service-card-link" href="gift-sets.html" aria-label="Подробнее о подарочных наборах">Подробнее →</a></article>
-      </div>
+{{#each page.catalog.items}}        <article class="service-card"><span>{{number}}</span><h3>{{title}}</h3><p>{{text}}</p><small>{{note}}</small><a class="service-card-link" href="{{url}}" aria-label="{{aria}}">Подробнее →</a></article>
+{{/each}}      </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container narrow-section">
-      <span class="kicker">Как начать</span><h2>Достаточно описать идею</h2>
-      <div class="simple-steps"><article><strong>1</strong><p>Выберите изделие или расскажите, для кого нужен подарок.</p></article><article><strong>2</strong><p>Пришлите фотографию, текст, логотип или пример оформления.</p></article><article><strong>3</strong><p>Согласуем макет, стоимость, срок и доставку.</p></article></div>
-      <a class="btn btn-primary" href="index.html#request">Рассчитать подарок</a>
+      <span class="kicker">{{page.start.kicker}}</span><h2>{{page.start.heading}}</h2>
+      <div class="simple-steps">{{#each page.start.steps}}<article><strong>{{number}}</strong><p>{{text}}</p></article>{{/each}}</div>
+      <a class="btn btn-primary" href="{{page.start.button.url}}">{{page.start.button.label}}</a>
     </div>
   </section>
 </main>

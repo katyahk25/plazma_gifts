@@ -1,20 +1,19 @@
 <main>
   <section class="page-hero compact-page-hero">
     <div class="container page-hero-grid">
-      <div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>Работы</span></nav><span class="kicker">Портфолио</span><h1>Реальные работы</h1><p class="lead">Здесь собраны примеры уже выполненных заказов. На компьютере наведите курсор на карточку, на телефоне нажимайте на фотографию.</p></div>
-      <aside class="page-hero-note"><strong>Покажем макет заранее</strong><p>Каждый новый заказ согласовываем до изготовления, поэтому пример можно адаптировать под вашу идею.</p></aside>
+      <div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span>—</span><span>{{page.hero.breadcrumb}}</span></nav><span class="kicker">{{page.hero.kicker}}</span><h1>{{page.hero.heading}}</h1><p class="lead">{{page.hero.lead}}</p></div>
+      <aside class="page-hero-note"><strong>{{page.hero.note_title}}</strong><p>{{page.hero.note_text}}</p></aside>
     </div>
   </section>
 
   <section class="section section-dark portfolio-page-section">
     <div class="container">
       <div class="works-grid">
-        <article class="work-card" data-carousel><div class="work-media"><img class="is-active" src="assets/images/portfolio/pens/01.webp" alt="Ручки с гравировкой, фото 1"><img src="assets/images/portfolio/pens/02.webp" alt="Ручки с гравировкой, фото 2"><img src="assets/images/portfolio/pens/03.webp" alt="Ручки с гравировкой, фото 3"><img src="assets/images/portfolio/pens/04.webp" alt="Ручки с гравировкой, фото 4"></div><div class="work-body"><h3>Ручки с гравировкой</h3><p>Подарочные ручки, именные надписи и персонализация.</p><span>Наведите или нажмите</span></div></article>
-        <article class="work-card" data-carousel><div class="work-media"><img class="is-active" src="assets/images/portfolio/notebooks/01.webp" alt="Ежедневники, фото 1"><img src="assets/images/portfolio/notebooks/02.webp" alt="Ежедневники, фото 2"><img src="assets/images/portfolio/notebooks/03.webp" alt="Ежедневники, фото 3"><img src="assets/images/portfolio/notebooks/04.webp" alt="Ежедневники, фото 4"></div><div class="work-body"><h3>Ежедневники с дизайном</h3><p>УФ-печать, подарочные надписи и оформление обложки.</p><span>Наведите или нажмите</span></div></article>
-        <article class="work-card" data-carousel><div class="work-media"><img class="is-active" src="assets/images/portfolio/canvases/01.webp" alt="Холсты, фото 1"><img src="assets/images/portfolio/canvases/02.webp" alt="Холсты, фото 2"><img src="assets/images/portfolio/canvases/03.webp" alt="Холсты, фото 3"></div><div class="work-body"><h3>Холсты по фотографиям</h3><p>Портреты питомцев и памятные изображения на холсте.</p><span>Наведите или нажмите</span></div></article>
-        <article class="work-card" data-carousel><div class="work-media"><img class="is-active" src="assets/images/portfolio/mugs/01.webp" alt="Кружки, фото 1"><img src="assets/images/portfolio/mugs/02.webp" alt="Кружки, фото 2"></div><div class="work-body"><h3>Кружки с дизайном</h3><p>Фотографии, иллюстрации и подписи на керамических кружках.</p><span>Наведите или нажмите</span></div></article>
+{{#each page.gallery.items}}
+        <article class="work-card" data-carousel><div class="work-media">{{#each images}}<img class="{{active_class}}" src="{{src}}" alt="{{alt}}" data-cms-path="gallery.items[{{@parent_index}}].images[{{@index}}].src">{{/each}}</div><div class="work-body"><h3>{{title}}</h3><p>{{text}}</p><span>{{page.gallery.hint}}</span></div></article>
+{{/each}}
       </div>
-      <div class="centered-action"><a class="btn btn-primary" href="index.html#request">Обсудить свой заказ</a></div>
+      <div class="centered-action"><a class="btn btn-primary" href="{{page.cta.url}}">{{page.cta.label}}</a></div>
     </div>
   </section>
 </main>
